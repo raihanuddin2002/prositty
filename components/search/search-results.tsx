@@ -27,7 +27,7 @@ export default function SearchResults({
   const [results, setResults] = useState<SearchResults>();
 
   const params = useSearchParams();
-  const query = params.get("q");
+  const query = params?.get("q");
 
   useEffect(() => {
     async function SearchItems() {

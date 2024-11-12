@@ -115,7 +115,7 @@ export default function AccountForm({ session, userData }: ItemsProps) {
   const { toast } = useToast();
 
   const searchParams = useSearchParams();
-  const loginSuccess = searchParams.get("login");
+  const loginSuccess = searchParams?.get("login")
 
   const form = useForm<z.infer<typeof userProfileForm>>({
     resolver: zodResolver(userProfileForm),

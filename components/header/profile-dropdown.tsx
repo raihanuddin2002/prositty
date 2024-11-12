@@ -161,7 +161,7 @@ export default function ProfileDropDown({
               </Fragment>
             )}
             <DropdownMenuGroup>
-              <form action="/auth/signout" method="post">
+              <form action="/api/auth/signout" method="post">
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <button
                     type="submit"
