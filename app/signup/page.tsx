@@ -1,4 +1,5 @@
 "use client";
+
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types_db";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,7 @@ interface ShowAlertProps {
     description?: string;
 }
 
-export default function AuthForm() {
+export default function SignUp() {
     const supabase = createClientComponentClient<Database>();
 
     const handleGoogleLogin = async () => {
