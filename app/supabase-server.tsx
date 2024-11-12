@@ -339,7 +339,7 @@ export async function getAllUsers() {
         )
         `
   );
-  console.log("Admin list all users", data)
+  // console.log("Admin list all users", data)
   if (error) console.log(error);
 
   return data as (UserData & { admin: AdminData | null })[] | null;

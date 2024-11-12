@@ -38,24 +38,24 @@ export async function middleware(req: NextRequest) {
         })
         .eq("id", user.id);
     }
-    if(!signalData?.location){
-      console.log("Registering location for new user..")
-      if(req.geo?.longitude){
-        console.log("Registering location for new user..", req.geo)
+    if (!signalData?.location) {
+      // console.log("Registering location for new user..")
+      if (req.geo?.longitude) {
+        // console.log("Registering location for new user..", req.geo)
         await supabase
-        .from("profiles")
-        .update({
-          location: `POINT(${req.geo?.longitude} ${req.geo?.latitude})`
-        })
-        .eq("id", user.id);
-      }else{
-        console.log("Reg.geo not available")
+          .from("profiles")
+          .update({
+            location: `POINT(${req.geo?.longitude} ${req.geo?.latitude})`
+          })
+          .eq("id", user.id);
+      } else {
+        // console.log("Reg.geo not available")
         await supabase
-        .from("profiles")
-        .update({
-          location: `POINT(0 0)`
-        })
-        .eq("id", user.id);
+          .from("profiles")
+          .update({
+            location: `POINT(0 0)`
+          })
+          .eq("id", user.id);
       }
     }
   }

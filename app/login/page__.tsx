@@ -24,8 +24,8 @@ export default function Login({
     if (error) {
       return redirect("/login?message=Could not authenticate user");
     }
-    console.log("Signin response", data)
-   // Delay to ensure the session is properly set
+    // console.log("Signin response", data)
+    // Delay to ensure the session is properly set
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return redirect("/");
   };
@@ -42,7 +42,7 @@ export default function Login({
       email,
       password,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: `${origin}/api/auth/callback`,
       },
     });
     console.log(error)

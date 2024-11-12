@@ -46,7 +46,7 @@ export default function AuthForm() {
                 }
             });
             // Handle success, e.g., redirect or fetch user data
-            
+
         } catch (error) {
             // Handle error, e.g., display an error message
             console.error('Login failed:', error);
@@ -91,7 +91,7 @@ export default function AuthForm() {
                 variant: "destructive",
             });
         }
-        console.log(data)
+        // console.log(data)
         setLoading(false);
         setAlert({
             show: true,

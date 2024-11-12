@@ -7,13 +7,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
 
-  console.log("Received request with code:", code);
+  // console.log("Received request with code:", code);
 
   if (code) {
     try {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) throw error;
-      console.log("Session exchange successful");
+      // console.log("Session exchange successful");
     } catch (error) {
       console.error('Error exchanging code for session:', error);
     }

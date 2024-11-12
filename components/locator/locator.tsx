@@ -30,7 +30,7 @@ export default function Locator({
   }, [session]);
 
 
-  console.log(process.env.NEXT_PUBLIC_MAPS_API_KEY);
+  // console.log(process.env.NEXT_PUBLIC_MAPS_API_KEY);
 
 
   if (!closestUsers)
