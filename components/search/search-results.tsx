@@ -1,6 +1,6 @@
 "use client";
 
-import { executeSearchByQuery } from "@/app/supabase-client";
+import { executeSearchByHashtag, executeSearchByQuery } from "@/app/supabase-client";
 import { Database } from "@/types_db";
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -18,26 +18,54 @@ export interface SearchResults {
   users: (UserData & { admin: AdminData | null })[] | null;
 }
 
+export interface HashtagResults {
+  places: PlaceItemData[] | null
+}
+
 export default function SearchResults({
   session,
 }: {
   session: Session | null;
 }) {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [results, setResults] = useState<SearchResults>();
+  const [hashtagResults, setHashtagResults] = useState<HashtagResults>()
 
-  const params = useSearchParams();
-  const query = params?.get("q");
+  console.log(hashtagResults?.places)
+
+  const searchParams = useSearchParams();
+  const query = searchParams?.get("q");
+  const hashtag = searchParams?.get('hashtag')
 
   useEffect(() => {
-    async function SearchItems() {
-      setLoading(true);
-      const results = await executeSearchByQuery(query!);
-      setResults(results);
-      setLoading(false);
+    async function SearchItems(query: string) {
+      try {
+        const results = await executeSearchByQuery(query)
+        setResults(results)
+      } catch (error) {
+        console.log(error)
+      }
+      finally {
+        setLoading(false)
+      }
     }
-    if (query && !results) SearchItems();
-  }, [query, results]);
+    if (query && !results) SearchItems(query);
+  }, [query, results])
+
+  // hastag search
+  useEffect(() => {
+    async function SearchItems(hashtag: string) {
+      try {
+        const results = await executeSearchByHashtag(hashtag);
+        setHashtagResults(results)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    if (hashtag && !hashtagResults) SearchItems(hashtag);
+  }, [hashtag, results, hashtagResults])
 
   if (loading)
     return (
@@ -55,19 +83,39 @@ export default function SearchResults({
           <h3 className="font-semibold text-gray-900 text-lg">
             Recommendations
           </h3>
-          {results?.places && results?.places?.length > 0 ? (
-            <div className="flex flex-col space-y-5">
-              {results?.places?.map((place) => (
-                <PlaceItemByCategory place={place} key={place.id} session={session} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600 font-semibold mx-auto my-2">
-              No Recommendations were found in this search!
-            </p>
-          )}
+
+          {hashtag && <>
+            {
+              hashtag && hashtagResults?.places && hashtagResults.places.length > 0 ? (
+                <div className="flex flex-col space-y-5">
+                  {hashtagResults?.places?.map((place) => (
+                    <PlaceItemByCategory place={place} key={place.id} session={session} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-600 font-semibold mx-auto my-2">
+                  No Recommendations were found in this search!
+                </p>
+              )
+            }
+          </>}
+
+          {query && <>
+            {results?.places && results?.places?.length > 0 ? (
+              <div className="flex flex-col space-y-5">
+                {results?.places?.map((place) => (
+                  <PlaceItemByCategory place={place} key={place.id} session={session} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-600 font-semibold mx-auto my-2">
+                No Recommendations were found in this search!
+              </p>
+            )}
+          </>}
         </Card>
-        <Card className="space-y-4 p-3 flex flex-col">
+
+        {query && <Card className="space-y-4 p-3 flex flex-col">
           <h3 className="font-semibold text-gray-900 text-lg">Users</h3>
           {results?.users && results.users.length > 0 ? (
             <Fragment>
@@ -80,22 +128,8 @@ export default function SearchResults({
               No users were found in this search!
             </p>
           )}
-        </Card>
-        {/*         <Card className="space-y-4 p-3 flex flex-col">
-          <h3 className="font-semibold text-gray-900 text-lg">Categories</h3>
-          {results?.categories && results.categories.length > 0 ? (
-            <Fragment>
-              {results?.categories?.map((category) => (
-                <CategoryItem category={category} key={category.id} />
-              ))}
-            </Fragment>
-          ) : (
-            <p className="text-gray-600 font-semibold mx-auto my-2">
-              No categories were found in this search!
-            </p>
-          )}
-        </Card> */}
+        </Card>}
       </div>
-    </div>
+    </div >
   );
 }

@@ -153,6 +153,23 @@ export async function executeSearchByQuery(query: string) {
   };
 }
 
+export async function executeSearchByHashtag(hashtag: string) {
+  const supabase = createClientComponentClient<Database>();
+
+  const { data: places, error: placesError } = await supabase
+    .from("places")
+    .select(`id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)`)
+    .contains("tags", [hashtag])
+
+  console.log(places)
+
+  if (placesError) console.log(placesError);
+
+  return {
+    places: places as PlaceItemData[] || null,
+  };
+}
+
 export async function addFavoriteUser(id: string) {
   const supabase = createClientComponentClient<Database>();
 

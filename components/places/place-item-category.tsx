@@ -47,6 +47,7 @@ import {
 } from "react-icons/hi";
 import AdminControls from "./controls";
 import { PlaceItemData } from "./place-item";
+import { useRouter } from "next/navigation";
 
 export interface PlaceItemByCategoryProps {
   place: PlaceItemData | null;
@@ -59,6 +60,7 @@ export default function PlaceItemByCategory({
   creator,
   session = null,
 }: PlaceItemByCategoryProps) {
+  const router = useRouter()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [favorite, setFavorite] = useState<boolean>(false);
   const [liked, setLiked] = useState<boolean>(false);
@@ -409,7 +411,12 @@ export default function PlaceItemByCategory({
 
                 {
                   place.tags.map((tag) => (
-                    <Button key={tag} type="button" className="h-[30px] px-2 text-[10px] py-1 uppercase me-2">
+                    <Button
+                      key={tag}
+                      type="button"
+                      onClick={() => router.push(`/search?hashtag=${tag}`)}
+                      className="h-[30px] px-2 text-[10px] py-1 uppercase me-2"
+                    >
                       {tag}
                     </Button>
                   ))

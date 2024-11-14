@@ -45,6 +45,7 @@ import {
 } from "react-icons/hi";
 import AdminControls from "./controls";
 import PlaceItemCloneModal from "./place-item-clone-modal";
+import { useRouter } from "next/navigation";
 
 export type PlaceItemData = Database["public"]["Tables"]["places"]["Row"] &
 { tags: string[], categories: { id: string, name: string }, creator?: UserData };
@@ -64,6 +65,7 @@ export default function PlaceItem({
     categories,
     userData
 }: PlaceItemProps) {
+    const router = useRouter()
     const supabase = createClientComponentClient<Database>()
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
     const [favorite, setFavorite] = useState<boolean>(false);
@@ -347,7 +349,12 @@ export default function PlaceItem({
 
                                     {
                                         place.tags.map((tag) => (
-                                            <Button key={tag} type="button" className="h-[30px] px-2 text-[10px] py-1 uppercase me-2">
+                                            <Button
+                                                key={tag}
+                                                type="button"
+                                                onClick={() => router.push(`/search?hashtag=${tag}`)}
+                                                className="h-[30px] px-2 text-[10px] py-1 uppercase me-2"
+                                            >
                                                 {tag}
                                             </Button>
                                         ))
