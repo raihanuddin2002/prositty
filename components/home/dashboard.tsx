@@ -21,7 +21,6 @@ export default async function Dashboard({
 }: {
   session: Session | null;
 }) {
-  const supabase = createServerSupabaseClient();
   const userData = await getUserDetails();
   const userCity = userData?.city || "Default City";
   const [categories, mostActiveUsers, latestPlaces, allCategories] =
@@ -105,7 +104,6 @@ export default async function Dashboard({
                     key={place.id}
                     place={place}
                     session={session}
-                    creator={place.creator}
                     userData={userData}
                     categories={allCategories}
                   />

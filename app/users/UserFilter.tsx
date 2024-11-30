@@ -15,7 +15,7 @@ interface User {
   dob: string | null;
   education: string | null;
   full_name: string | null;
-  gender: "male" | "female" | "other" | null; 
+  gender: "male" | "female" | "other" | null;
   hobbies: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -32,12 +32,12 @@ interface User {
 }
 
 interface AdminData {
-    admin_from: string;
-    user_id: string;
-    valid: boolean;
-    adminRole?: string;  // Optional or default field if needed
-  }
-  
+  admin_from: string;
+  user_id: string;
+  valid: boolean;
+  adminRole?: string;  // Optional or default field if needed
+}
+
 interface UserFilterProps {
   users: User[] | null; // Allow users to be null
 }
@@ -47,6 +47,11 @@ export default function UserFilter({ users }: UserFilterProps) {
     city: "",
     country: "",
     race: "",
+    location: "",
+    age: "",
+    gender: "",
+    education: "",
+    occupation: ""
   });
 
   const [showFilter, setShowFilter] = useState(false); // State to toggle filter visibility
@@ -63,6 +68,7 @@ export default function UserFilter({ users }: UserFilterProps) {
     e.preventDefault();
   };
 
+  // console.log(users)
   const filteredUsers = users?.filter((user) => {
     return (
       (!filters.city || user.city?.toLowerCase() === filters.city.toLowerCase()) &&

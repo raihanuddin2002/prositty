@@ -17,7 +17,7 @@ export default async function ProfilePage({
     getUserByUsername(params.username),
     getUserPlacesByUsername(params.username),
     getUserDetails(),
-  ]);
+  ])
 
   if (!userData)
     return (

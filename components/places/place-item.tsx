@@ -48,11 +48,11 @@ import PlaceItemCloneModal from "./place-item-clone-modal";
 import { useRouter } from "next/navigation";
 
 export type PlaceItemData = Database["public"]["Tables"]["places"]["Row"] &
-{ tags: string[], categories: { id: string, name: string }, creator?: UserData };
+{ tags: string[] } & UserData;
 
 export interface PlaceItemProps {
     place: PlaceItemData | null;
-    creator?: UserData
+    // creator?: UserData
     session?: Session | null;
     categories?: CategoryData[]
     userData?: (UserData & { admin: AdminData | null }) | null // for full details login user admin or not etc which you can't found in session
@@ -60,7 +60,7 @@ export interface PlaceItemProps {
 
 export default function PlaceItem({
     place,
-    creator,
+    // creator,
     session = null,
     categories,
     userData
@@ -130,10 +130,10 @@ export default function PlaceItem({
             }
         }
 
-        if (creator?.avatar_url) downloadImage(creator.avatar_url)
-    }, [creator?.avatar_url, supabase])
+        if (place?.avatar_url) downloadImage(place.avatar_url)
+    }, [place?.avatar_url, supabase])
 
-    const initials = getInitials(creator?.full_name);
+    const initials = getInitials(place?.full_name);
 
     return (
         <Card className="p-4 w-full">
@@ -141,9 +141,9 @@ export default function PlaceItem({
                 Category:{" "}
                 <Link
                     className="font-bold"
-                    href={`/category/${place?.categories?.name}`}
+                    href={`/category/${place?.category_name}`}
                 >
-                    {place?.categories?.name}
+                    {place?.category_name}
                 </Link>
             </h2>
             <Card className="p-2 flex flex-row items-center justify-between min-w-[10rem] mt-5">
@@ -299,13 +299,13 @@ export default function PlaceItem({
                                 <div className="flex flex-row items-center">
                                     <Link
                                         className="block rounded-full cursor-pointer ring-offset-2 ring-gray-200 ring-2"
-                                        href={`/user/${creator?.username}`}
+                                        href={`/user/${place?.username}`}
                                     >
                                         <Avatar className="h-10 w-10">
                                             <AvatarImage
                                                 alt={
-                                                    creator?.username ||
-                                                    `${creator?.username}'s profile picture`
+                                                    place?.username ||
+                                                    `${place?.username}'s profile picture`
                                                 }
                                                 src={avatarUrl || undefined}
                                             />
@@ -314,9 +314,9 @@ export default function PlaceItem({
                                     </Link>
                                     <Link
                                         className="ml-3 font-bold"
-                                        href={`/user/${creator?.username}`}
+                                        href={`/user/${place?.username}`}
                                     >
-                                        {creator?.username}
+                                        {place?.username}
                                     </Link>
                                 </div>
                             </DialogHeader>

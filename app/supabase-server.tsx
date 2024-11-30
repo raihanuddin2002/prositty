@@ -233,7 +233,7 @@ export async function getCategoryBySlug(slug: string) {
       `
   *,
   places:places!inner (
-    id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)
+    id, name, created_at,created_by, comment, contact, link, online, city, tags, category_id
   )
   `
     )
@@ -265,67 +265,33 @@ export async function getMostActiveUsers() {
 export async function getLatestPlaces(userCity: string) {
   const supabase = createServerSupabaseClient();
 
-  const { data: placesFromUserCity, error: errorCity } = await supabase
-    .from('places')
-    .select(`id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)`)
-    .eq("city", userCity)
-    .order("created_at", { ascending: false })
-    .limit(10)
+  const placesFromUserCityPromise = supabase.rpc('test' as any, { arg_limit: 10, user_city: userCity, condition: 'eq' })
 
-  if (errorCity) {
-    console.error("Error fetching places from the user's city:", errorCity);
-    return [];
-  }
+  const placesFromOtherCitiesPromise = supabase.rpc('test' as any, { arg_limit: 10, user_city: userCity, condition: 'neq' })
 
-  const { data: placesFromOtherCities, error: errorOthers } = await supabase
-    .from('places')
-    .select(`id, name, created_at, created_by, comment, contact, link, online, city, tags, categories(id, name)`)
-    .neq("city", userCity) // Fetch places NOT in the user's city
-    .order("created_at", { ascending: false })
-    .limit(10); // Limit to 10 results
+  const [{ data: placesFromUserCity, error: errorCity }, { data: placesFromOtherCities, error: errorOthers }] = await Promise.all([placesFromUserCityPromise, placesFromOtherCitiesPromise])
 
-  if (errorOthers) {
-    console.error("Error fetching places from other cities:", errorOthers);
-    return placesFromUserCity as PlaceItemData[]; // If error, return only places from the user's city
-  }
+  if (errorCity) console.error(errorCity)
+  if (errorOthers) console.error(errorOthers)
 
-  const combinedResults = [...placesFromUserCity, ...placesFromOtherCities];
+  let places = [] as PlaceItemData[]
 
-  const createdByIds = combinedResults ? Array.from(new Set(combinedResults.map(place => place.created_by))) : []
-  const { data: profiles, error: profilesErr } = await supabase.from('profiles').select('*').in('id', createdByIds)
+  if (placesFromUserCity) places = [...places, ...placesFromUserCity]
+  if (placesFromOtherCities) places = [...places, ...placesFromOtherCities]
 
-  if (profilesErr) {
-    console.error("Error fetching places from other cities:", errorOthers);
-    return [] as PlaceItemData[] // If error, return only places from the user's city
-  }
-
-  const combinedResultsWithCreatorProfile = combinedResults.map(place => ({
-    ...place,
-    creator: profiles ? profiles.find(profile => profile.id === place.created_by) : [],
-  }))
-
-  return combinedResultsWithCreatorProfile as PlaceItemData[];
+  return places.length > 0 ? places : null
 }
 
 export async function getAllPlaces() {
   const supabase = createServerSupabaseClient();
 
-  const { data: places, error } = await supabase
-    .from('places')
-    .select(`id, name, created_at, created_by, comment, contact, link, online, city, tags, categories(id, name)`)
+  const { data: places, error } = await supabase.rpc('all_places_with_creator_profile' as any)
 
-  const createdByIds = places ? Array.from(new Set(places.map(place => place.created_by))) : []
-
-  const { data: profiles } = await supabase.from('profiles').select('*').in('id', createdByIds)
   if (error) {
     console.error(error);
-  } else {
-    const combinedData = places.map(place => ({
-      ...place,
-      creator: profiles ? profiles.find(profile => profile.id === place.created_by) : [],
-    }))
-    return combinedData as PlaceItemData[];
   }
+
+  return places?.length > 0 ? places as PlaceItemData[] : null
 }
 
 export async function getAllUsers() {

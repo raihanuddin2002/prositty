@@ -74,7 +74,7 @@ export default function PlaceItemCloneModal({ place, categories }: Props) {
             isOnline: place?.online || false,
             link: place?.link || "",
             contact: place?.contact || "",
-            category: place?.categories?.id || "",
+            category: place?.category_id || "",
             tags: hashtags
         },
     });
