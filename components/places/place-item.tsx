@@ -44,7 +44,7 @@ import {
     HiOutlinePlus,
 } from "react-icons/hi";
 import AdminControls from "./controls-by-item";
-import PlaceItemCloneModal from "./place-item-clone-modal";
+import ClonePlaceItemForm from "./clone-place-item-form";
 import { useRouter } from "next/navigation";
 
 export type PlaceItemData = Database["public"]["Tables"]["places"]["Row"] & UserData;
@@ -386,7 +386,7 @@ export default function PlaceItem({
                                             </TooltipProvider>
 
                                             <DialogContent className="z-[1001] p-0">
-                                                <PlaceItemCloneModal
+                                                <ClonePlaceItemForm
                                                     place={place}
                                                     categories={categories as CategoryData[]}
                                                 />

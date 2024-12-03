@@ -56,10 +56,9 @@ type Props = {
     categories?: CategoryData[];
 }
 
-export default function PlaceItemCloneModal({ place, categories }: Props) {
+export default function ClonePlaceItemForm({ place, categories }: Props) {
     const { toast } = useToast();
     const router = useRouter();
-    const supabase = createClientComponentClient<Database>();
     const [loading, setLoading] = useState(false);
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [hashtags, setHashTags] = useState(place?.tags || [] as string[]);
@@ -75,7 +74,8 @@ export default function PlaceItemCloneModal({ place, categories }: Props) {
             link: place?.link || "",
             contact: place?.contact || "",
             category: place?.category_id || "",
-            tags: hashtags
+            tags: hashtags,
+            private: false
         },
     });
 
@@ -224,6 +224,26 @@ export default function PlaceItemCloneModal({ place, categories }: Props) {
                                             recommending.
                                         </FormDescription>
                                         <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="private"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-4">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel>Private</FormLabel>
+                                            <FormDescription>
+                                                Select this if you want only your friends can see.
+                                            </FormDescription>
+                                        </div>
                                     </FormItem>
                                 )}
                             />

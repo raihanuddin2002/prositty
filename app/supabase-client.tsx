@@ -52,6 +52,7 @@ export async function addPlace(values: z.infer<typeof addPlaceSchema>) {
       {
         name: values.name,
         category_id: values.category,
+        private: values.private || false,
         online: values.isOnline || false,
         city: values?.city || null,
         comment: values.comment,
@@ -76,6 +77,7 @@ export async function editPlace(
     .update({
       name: values.name,
       category_id: values.category,
+      private: values.private,
       online: values.isOnline,
       city: values?.city || null,
       comment: values.comment,

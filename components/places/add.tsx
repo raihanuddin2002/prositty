@@ -47,6 +47,7 @@ export const addPlaceSchema = z
       .min(2, { message: "The name is too short (minimum 2 characters)!" })
       .max(60, { message: "The name is too long (maximum 60 characters)!" }),
     category: z.string().optional(),
+    private: z.boolean().default(false),
     isOnline: z.boolean().default(false),
     city: z
       .string()
@@ -100,7 +101,8 @@ export default function AddPlaceForm({
       comment: "",
       city: "",
       category: "732ba6fa-6f52-4c07-bef7-d93bfae67afa",
-      tags: [] as string[]
+      tags: [] as string[],
+      private: false
     },
   });
 
@@ -225,6 +227,26 @@ export default function AddPlaceForm({
                   <Textarea placeholder="I like it because..." {...field} />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="private"
+            render={({ field }) => (
+              <FormItem
+                className="flex flex-row items-start space-x-3 space-y-0 mt-4"
+                title="Select this if you want only your friends can see."
+              >
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Private</FormLabel>
+                </div>
               </FormItem>
             )}
           />
