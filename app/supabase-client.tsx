@@ -2,7 +2,7 @@ import { addCategorySchema } from "@/components/category/add";
 import { CategoryData } from "@/components/category/list";
 import { AdminData, UserData } from "@/components/header/items";
 import { addPlaceSchema } from "@/components/places/add";
-import { PlaceItemData } from "@/components/places/place-item";
+import { PlaceItemByCategoryData } from "@/components/places/place-item-category";
 import { SearchResults } from "@/components/search/search-results";
 import { Database } from "@/types_db";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -149,7 +149,7 @@ export async function executeSearchByQuery(query: string) {
   return {
     users: (users as SearchResults["users"]) || null,
     categories: categories || null,
-    places: places as PlaceItemData[] || null,
+    places: places as PlaceItemByCategoryData[] || null,
   };
 }
 
@@ -161,12 +161,10 @@ export async function executeSearchByHashtag(hashtag: string) {
     .select(`id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)`)
     .contains("tags", [hashtag])
 
-  console.log(places)
-
   if (placesError) console.log(placesError);
 
   return {
-    places: places as PlaceItemData[] || null,
+    places: places as PlaceItemByCategoryData[] || null,
   };
 }
 

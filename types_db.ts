@@ -203,8 +203,9 @@ export type Database = {
           link: string | null;
           name: string;
           online: boolean | null;
-          tags: string[]
-          category_name?: string
+          tags: string[];
+          category_name?: string;
+          private: boolean;
         };
         Insert: {
           category_id?: string | null;

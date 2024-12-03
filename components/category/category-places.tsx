@@ -2,12 +2,11 @@
 
 import React from "react";
 import { CategoryData } from "./list";
-import PlaceItemByCategory from "../places/place-item-category";
+import PlaceItemByCategory, { PlaceItemByCategoryData } from "../places/place-item-category";
 import { Session } from "@supabase/supabase-js";
-import { PlaceItemData } from "../places/place-item";
 
 export interface CategoryPlacesProps {
-  category: CategoryData & { places: PlaceItemData[] | null };
+  category: CategoryData & { places: PlaceItemByCategoryData[] | null };
   session: Session | null;
 }
 

@@ -6,20 +6,19 @@ import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Fragment, useEffect, useState } from "react";
 import { Card } from "../ui/card";
-import PlaceItemByCategory from "../places/place-item-category";
+import PlaceItemByCategory, { PlaceItemByCategoryData } from "../places/place-item-category";
 import UserItem from "../user/user-item";
 import { AdminData, UserData } from "../header/items";
 import { Session } from "@supabase/supabase-js";
-import { PlaceItemData } from "../places/place-item";
 
 export interface SearchResults {
-  places: PlaceItemData[] | null;
+  places: PlaceItemByCategoryData[] | null;
   categories: Database["public"]["Tables"]["categories"]["Row"][] | null;
   users: (UserData & { admin: AdminData | null })[] | null;
 }
 
 export interface HashtagResults {
-  places: PlaceItemData[] | null
+  places: PlaceItemByCategoryData[] | null
 }
 
 export default function SearchResults({
@@ -29,9 +28,7 @@ export default function SearchResults({
 }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [results, setResults] = useState<SearchResults>();
-  const [hashtagResults, setHashtagResults] = useState<HashtagResults>()
-
-  console.log(hashtagResults?.places)
+  const [hashtagResults, setHashtagResults] = useState<HashtagResults | null>(null)
 
   const searchParams = useSearchParams();
   const query = searchParams?.get("q");

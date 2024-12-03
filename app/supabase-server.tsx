@@ -265,9 +265,9 @@ export async function getMostActiveUsers() {
 export async function getLatestPlaces(userCity: string) {
   const supabase = createServerSupabaseClient();
 
-  const placesFromUserCityPromise = supabase.rpc('test' as any, { arg_limit: 10, user_city: userCity, condition: 'eq' })
+  const placesFromUserCityPromise = supabase.rpc('latest_places_with_creator_profile' as any, { arg_limit: 10, user_city: userCity, condition: 'eq' })
 
-  const placesFromOtherCitiesPromise = supabase.rpc('test' as any, { arg_limit: 10, user_city: userCity, condition: 'neq' })
+  const placesFromOtherCitiesPromise = supabase.rpc('latest_places_with_creator_profile' as any, { arg_limit: 10, user_city: userCity, condition: 'neq' })
 
   const [{ data: placesFromUserCity, error: errorCity }, { data: placesFromOtherCities, error: errorOthers }] = await Promise.all([placesFromUserCityPromise, placesFromOtherCitiesPromise])
 

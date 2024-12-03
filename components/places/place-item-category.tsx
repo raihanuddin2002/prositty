@@ -45,12 +45,13 @@ import {
   HiHeart,
   HiOutlineHeart,
 } from "react-icons/hi";
-import AdminControls from "./controls";
+import AdminControls from "./controls-by-category";
 import { PlaceItemData } from "./place-item";
 import { useRouter } from "next/navigation";
 
+export type PlaceItemByCategoryData = Database["public"]["Tables"]["places"]["Row"] & { categories: { id: string; name: string } }
 export interface PlaceItemByCategoryProps {
-  place: PlaceItemData | null;
+  place: PlaceItemByCategoryData | null;
   creator?: (UserData & { admin: AdminData | null }) | null;
   session?: Session | null;
 }

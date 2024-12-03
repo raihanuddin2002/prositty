@@ -64,7 +64,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Checkbox } from "../ui/checkbox";
 
-export default function PlaceControls({
+export default function PlaceControlsByCategory({
   userData,
   place,
   categories,

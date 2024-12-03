@@ -43,16 +43,14 @@ import {
     HiOutlineHeart,
     HiOutlinePlus,
 } from "react-icons/hi";
-import AdminControls from "./controls";
+import AdminControls from "./controls-by-item";
 import PlaceItemCloneModal from "./place-item-clone-modal";
 import { useRouter } from "next/navigation";
 
-export type PlaceItemData = Database["public"]["Tables"]["places"]["Row"] &
-{ tags: string[] } & UserData;
+export type PlaceItemData = Database["public"]["Tables"]["places"]["Row"] & UserData;
 
 export interface PlaceItemProps {
     place: PlaceItemData | null;
-    // creator?: UserData
     session?: Session | null;
     categories?: CategoryData[]
     userData?: (UserData & { admin: AdminData | null }) | null // for full details login user admin or not etc which you can't found in session
@@ -60,7 +58,6 @@ export interface PlaceItemProps {
 
 export default function PlaceItem({
     place,
-    // creator,
     session = null,
     categories,
     userData

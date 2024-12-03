@@ -44,7 +44,7 @@ export default function AuthForm() {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`
         }
       });
       // Handle success, e.g., redirect or fetch user data
