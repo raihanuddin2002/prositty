@@ -5,7 +5,7 @@ import PlaceItem from "./place-item";
 
 export default async function AllPlacesList() {
   const [session, places, userData, categories] = await Promise.all([getSession(), getAllPlaces(), getUserDetails(), getAllCategories()])
-  // console.log(places)
+
   return (
     <section className="mt-6">
       {places && places?.length > 0 ? (

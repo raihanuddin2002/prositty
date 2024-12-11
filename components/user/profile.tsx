@@ -29,9 +29,10 @@ export default function UserProfileView({
   places,
   isAdmin,
 }: UserInfoProps) {
+  const supabase = createClientComponentClient<Database>();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [favorite, setFavorite] = useState<boolean>(false);
-  const supabase = createClientComponentClient<Database>();
+  const [followers, setFollowers] = useState(0)
 
   const { toast } = useToast();
   const router = useRouter();
@@ -73,19 +74,31 @@ export default function UserProfileView({
       }
     }
 
+    async function followersCountOfUser(id: string) {
+      const supabase = createClientComponentClient<Database>();
+
+      const { data, error } = await supabase
+        .rpc('followers_count_of_user' as any, { userid: id })
+
+      if (error) console.log(error);
+
+      return setFollowers(data ?? 0)
+    }
+
     if (userData?.avatar_url) downloadImage(userData?.avatar_url);
     if (userData) checkIfFavoriteUser(userData.id);
+    if (userData?.id) followersCountOfUser(userData.id)
   }, [userData?.avatar_url, supabase, toast, userData]);
 
   const initials = getInitials(userData?.full_name);
 
   const totalCountOfPlaces = places
     ? places.reduce((acc, category) => {
-        return acc + (category.places ? category.places.length : 0);
-      }, 0)
+      return acc + (category.places ? category.places.length : 0);
+    }, 0)
     : 0;
 
-  
+
   return (
     <div className="max-w-5xl mx-auto flex flex-col md:grid md:grid-cols-3">
       <div className="p-6 col-span-1">
@@ -103,7 +116,7 @@ export default function UserProfileView({
             </Avatar>
           </div>
 
-          <div>
+          <div className="mb-5">
             <div className="flex flex-row items-center justify-start">
               <h1 className="text-2xl font-bold">{userData?.username}</h1>
             </div>
@@ -122,6 +135,9 @@ export default function UserProfileView({
             </p>
           </div>
         </div>
+        <div className="text-center">
+          <p><strong>{followers}</strong> followers</p>
+        </div>
         {session ? (
           favorite ? (
             <Button
@@ -129,23 +145,25 @@ export default function UserProfileView({
               className="w-full mt-2"
               onClick={() => {
                 setFavorite(false);
+                setFollowers(follower => follower - 1)
                 removeFavoriteUser(userData?.id as string);
               }}
             >
               <HiStar className="w-5 h-5 mr-2 text-yellow-500" />
-              Unfavorite
+              Unfollow
             </Button>
           ) : (
             <Button
               variant="outline"
               className="w-full mt-2"
               onClick={() => {
-                setFavorite(true);
+                setFavorite(true)
+                setFollowers(follower => follower + 1)
                 addFavoriteUser(userData?.id as string);
               }}
             >
               <HiOutlineStar className="w-5 h-5 mr-2 text-gray-600" />
-              Favorite
+              Follow
             </Button>
           )
         ) : null}

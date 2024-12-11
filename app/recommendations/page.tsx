@@ -1,25 +1,28 @@
 import React from "react";
-import { getAllPlaces, getSession, getStats } from "../supabase-server";
-import AllPlacesList from "@/components/places/all-places";
+import { getAllCategories, getAllPlaces, getSession, getStats, getUserDetails } from "../supabase-server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { HiOutlinePlus } from "react-icons/hi";
+import { HiOutlineEmojiSad, HiOutlinePlus } from "react-icons/hi";
+import RecommendationFilter from "./recommendation-filter";
 
 export default async function Places() {
-  const [session, stats] = await Promise.all([
+  const [session, places, userData, categories] = await Promise.all([
     getSession(),
-    getStats(),
-  ]);
+    getAllPlaces(),
+    getUserDetails(),
+    getAllCategories(),
+    getStats()
+  ])
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 md:px-8">
       <div className="items-start justify-between py-4 border-b md:flex">
         <div className="max-w-lg">
           <h3 className="text-gray-800 text-2xl font-bold">Recommendations</h3>
-          {stats && (
+          {places && (
             <p className="text-gray-600 mt-2">
               <span className="text-black font-bold">
-                {stats![0].places_count}
+                {places.length}
               </span>{" "}
               Reccomendations in total.
             </p>
@@ -35,7 +38,17 @@ export default async function Places() {
         )}
       </div>
 
-      <AllPlacesList />
+      <section className="mt-3">
+        <div className="flex flex-col space-y-5">
+          <RecommendationFilter
+            places={places}
+            session={session}
+            categories={categories}
+            userData={userData}
+          />
+        </div>
+      </section>
+
     </div>
   );
 }

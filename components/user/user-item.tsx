@@ -8,7 +8,6 @@ import {
 } from "@supabase/auth-helpers-nextjs";
 import React, { useEffect, useState } from "react";
 import { Card } from "../ui/card";
-import { useToast } from "../ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -45,8 +44,6 @@ export default function UserItem({ userData, session = null }: UserItemProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [favorite, setFavorite] = useState<boolean>(false);
   const supabase = createClientComponentClient<Database>();
-
-  const { toast } = useToast();
 
   useEffect(() => {
     async function checkIfFavoriteUser(id: string) {

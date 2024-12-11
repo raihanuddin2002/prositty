@@ -12,17 +12,15 @@ import { getInitials } from "@/lib/utils";
 import { useToast } from "../ui/use-toast";
 import { Card } from "../ui/card";
 import { HiOutlineEmojiSad } from "react-icons/hi";
-import PlaceItemByCategory from "./place-item-category";
+import PlaceItemByCategory, { PlaceItemByCategoryData } from "./place-item-category";
 import Link from "next/link";
-import { PlaceItemData } from "./place-item";
 
-// export type PlaceData = Database["public"]["Tables"]["places"]["Row"] & { tags: string[] };
 export type CategoryData = Database["public"]["Tables"]["categories"]["Row"];
 
 export interface UserPlacesListProps {
   session: Session | null;
   userData: (UserData & { admin: AdminData | null }) | null;
-  places: (CategoryData & { places: PlaceItemData[] | null })[] | null;
+  places: (CategoryData & { places: PlaceItemByCategoryData[] | null })[] | null;
 }
 
 export default function UserPlacesList({

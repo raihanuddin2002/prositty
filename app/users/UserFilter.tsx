@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import UserItem from "@/components/user/user-item"; // Adjust the import path based on your project structure
 import { calculateAge } from "@/utils";
+import debounce from "lodash.debounce";
 
 // Define the full User interface
 interface User {
@@ -55,32 +56,27 @@ export default function UserFilter({ users }: UserFilterProps) {
     profession: ""
   });
   const [sort, setSort] = useState('')
-
   const [showFilter, setShowFilter] = useState(false); // State to toggle filter visibility
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFilterChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
     }));
-  };
+  }, 500);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
-  const filteredUsers = users?.filter((user) => {
+  const filteredUsers = (user: User) => {
     return (
-      (!filters.city || user.city?.toLowerCase() === filters.city.toLowerCase()) &&
-      (!filters.country || user.country?.toLowerCase() === filters.country.toLowerCase()) &&
-      (!filters.race || user.race?.toLowerCase() === filters.race.toLowerCase()) &&
+      (!filters.city || user.city?.toLowerCase().startsWith(filters.city.toLowerCase())) &&
+      (!filters.country || user.country?.toLowerCase().startsWith(filters.country.toLowerCase())) &&
+      (!filters.race || user.race?.toLowerCase().startsWith(filters.race.toLowerCase())) &&
       (!filters.age || calculateAge(user?.dob ? user.dob : '').toString() === filters.age) &&
       (!filters.gender || user.gender?.toLowerCase() === filters.gender.toLowerCase()) &&
-      (!filters.education || user.education?.toLowerCase() === filters.race.toLowerCase()) &&
-      (!filters.profession || user.profession?.toLowerCase() === filters.race.toLowerCase())
-    );
-  }) || [];
+      (!filters.education || user.education?.toLowerCase().startsWith(filters.education.toLowerCase())) &&
+      (!filters.profession || user.profession?.toLowerCase().startsWith(filters.profession.toLowerCase()))
+    )
+  };
 
   return (
     <div className="mt-3">
@@ -95,23 +91,21 @@ export default function UserFilter({ users }: UserFilterProps) {
       <div className="inline-block border rounded-md pe-2 ">
         <select
           name="sort"
-          className="py-2 px-4 bg-transparent focus:outline-none"
+          className="py-[10px] px-4 bg-transparent focus:outline-none"
           onChange={(e) => setSort(e.target.value)}
         >
           <option value="">Sort</option>
-          <option value="ASC">ASC</option>
-          <option value="DESC">DESC</option>
+          <option value="NEWEST">Newest</option>
         </select>
       </div>
 
       {/* Filter Section (visible when showFilter is true) */}
       {showFilter && (
-        <form className="mb-6 flex items-center flex-wrap gap-3 max-w-[100%]" onSubmit={handleSubmit}>
+        <div className="flex items-center gap-3 flex-wrap mb-6 max-w-full">
           <input
             type="text"
             name="country"
             placeholder="Country"
-            value={filters.country}
             onChange={handleFilterChange}
             className="border p-2 rounded-md"
           />
@@ -120,7 +114,6 @@ export default function UserFilter({ users }: UserFilterProps) {
             type="text"
             name="city"
             placeholder="City"
-            value={filters.city}
             onChange={handleFilterChange}
             className="border p-2 rounded-md"
           />
@@ -129,23 +122,14 @@ export default function UserFilter({ users }: UserFilterProps) {
             type="text"
             name="race"
             placeholder="Race"
-            value={filters.race}
             onChange={handleFilterChange}
             className="border p-2 rounded-md"
           />
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            value={filters.race}
-            onChange={handleFilterChange}
-            className="border p-2 rounded-md"
-          />
+
           <input
             type="text"
             name="age"
             placeholder="Age"
-            value={filters.age}
             onChange={handleFilterChange}
             className="border p-2 rounded-md"
           />
@@ -165,18 +149,8 @@ export default function UserFilter({ users }: UserFilterProps) {
 
           <input
             type="text"
-            name="age"
-            placeholder="Public Person"
-            value={filters.race}
-            onChange={handleFilterChange}
-            className="border p-2 rounded-md"
-          />
-
-          <input
-            type="text"
             name="education"
             placeholder="Education"
-            value={filters.education}
             onChange={handleFilterChange}
             className="border p-2 rounded-md"
           />
@@ -184,34 +158,29 @@ export default function UserFilter({ users }: UserFilterProps) {
             type="text"
             name="profession"
             placeholder="Occupation"
-            value={filters.profession}
             onChange={handleFilterChange}
             className="border p-2 rounded-md"
           />
-
-          <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-lg">
-            Apply
-          </button>
-        </form>
+        </div>
       )}
 
       {/* User List Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {filteredUsers?.sort((a, b) => {
-          if (a?.username && b.username) {
-            if (sort === "ASC") {
-              return a?.username.localeCompare(b?.username);
-            }
-            if (sort === "DESC") {
-              return b.username.localeCompare(a.username);
-            }
-          }
+        {users && users.length > 0 &&
+          users
+            .filter(user => filteredUsers(user))
+            .sort((a, b) => {
+              if (sort === "NEWEST") {
+                const dateA = new Date(a.created_at).getTime()
+                const dateB = new Date(b.created_at).getTime()
 
-          return 0
-        })
-          .map((user) => (
-            <UserItem userData={user} key={user.id} />
-          ))}
+                return dateB - dateA;
+              }
+              return 0
+            })
+            .map((user) => (
+              <UserItem userData={user} key={user.id} />
+            ))}
       </div>
     </div>
   );

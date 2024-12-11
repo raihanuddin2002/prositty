@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, memo, useEffect, useState } from "react";
 import { CategoryData } from "./user-places";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
@@ -56,12 +56,12 @@ export interface PlaceItemProps {
     userData?: (UserData & { admin: AdminData | null }) | null // for full details login user admin or not etc which you can't found in session
 }
 
-export default function PlaceItem({
+const PlaceItem = ({
     place,
     session = null,
     categories,
     userData
-}: PlaceItemProps) {
+}: PlaceItemProps) => {
     const router = useRouter()
     const supabase = createClientComponentClient<Database>()
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -71,6 +71,8 @@ export default function PlaceItem({
     const [follows, setFollows] = useState<number | null>(null);
 
     useEffect(() => {
+        let ignore = false
+
         async function checkPlace(id: string) {
             const { data, error } = await supabase.rpc("is_favorite_and_liked", {
                 place_id: id,
@@ -78,15 +80,17 @@ export default function PlaceItem({
 
             if (error) return console.log(error);
 
-            if (data) {
-                setFavorite(data[0].favorite);
-                setLiked(data[0].liked);
-                setLikes(data[0].likes);
-                return;
-            }
+            if (!ignore) {
+                if (data) {
+                    setFavorite(data[0].favorite);
+                    setLiked(data[0].liked);
+                    setLikes(data[0].likes);
+                    return;
+                }
 
-            setFavorite(false);
-            setLiked(false);
+                setFavorite(false);
+                setLiked(false);
+            }
         }
 
         async function countFollows(id: string) {
@@ -96,20 +100,28 @@ export default function PlaceItem({
 
             if (error) return console.log(error);
 
-            if (data) {
-                setFollows(data);
-                return;
-            }
+            if (!ignore) {
+                if (data) {
+                    setFollows(data);
+                    return;
+                }
 
-            setFavorite(false);
-            setLiked(false);
+                setFavorite(false);
+                setLiked(false);
+            }
         }
 
         if (place?.id) checkPlace(place.id);
-        if (place?.id) countFollows(place.id);
+        if (place?.id) countFollows(place.id)
+
+        return () => {
+            ignore = true
+        }
     }, [place?.id, supabase]);
 
     useEffect(() => {
+        let ignore = false
+
         async function downloadImage(path: string) {
             try {
                 const { data, error } = await supabase.storage
@@ -119,8 +131,10 @@ export default function PlaceItem({
                     throw error;
                 }
 
-                const url = URL.createObjectURL(data);
-                setAvatarUrl(url);
+                if (!ignore) {
+                    const url = URL.createObjectURL(data);
+                    setAvatarUrl(url);
+                }
 
             } catch (error) {
                 console.log("Error downloading image:", error);
@@ -128,6 +142,10 @@ export default function PlaceItem({
         }
 
         if (place?.avatar_url) downloadImage(place.avatar_url)
+
+        return () => {
+            ignore = true
+        }
     }, [place?.avatar_url, supabase])
 
     const initials = getInitials(place?.full_name);
@@ -478,5 +496,7 @@ export default function PlaceItem({
         </Card>
     );
 }
+
+export default memo(PlaceItem)
 
 
