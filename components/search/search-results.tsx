@@ -6,19 +6,15 @@ import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Fragment, useEffect, useState } from "react";
 import { Card } from "../ui/card";
-import PlaceItemByCategory, { PlaceItemByCategoryData } from "../places/place-item-category";
 import UserItem from "../user/user-item";
 import { AdminData, UserData } from "../header/items";
 import { Session } from "@supabase/supabase-js";
+import PlaceItem, { PlaceItemData } from "../places/place-item";
 
 export interface SearchResults {
-  places: PlaceItemByCategoryData[] | null;
+  places: PlaceItemData[] | null;
   categories: Database["public"]["Tables"]["categories"]["Row"][] | null;
   users: (UserData & { admin: AdminData | null })[] | null;
-}
-
-export interface HashtagResults {
-  places: PlaceItemByCategoryData[] | null
 }
 
 export default function SearchResults({
@@ -28,7 +24,7 @@ export default function SearchResults({
 }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [results, setResults] = useState<SearchResults>();
-  const [hashtagResults, setHashtagResults] = useState<HashtagResults | null>(null)
+  const [hashtagResults, setHashtagResults] = useState<PlaceItemData[] | null>(null)
 
   const searchParams = useSearchParams();
   const query = searchParams?.get("q");
@@ -73,24 +69,28 @@ export default function SearchResults({
     );
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h2 className="text-gray-800 text-xl font-bold my-2">Search results</h2>
+    <div className=" mx-auto my-2">
+      {/* <h2 className="text-gray-800 text-xl font-bold my-2">Search results</h2> */}
       <div className="space-y-3">
         <Card className="p-3 flex flex-col">
-          <h3 className="font-semibold text-gray-900 text-lg">
+          <h3 className="font-semibold text-gray-900 text-lg my-2">
             Recommendations
           </h3>
 
           {hashtag && <>
             {
-              hashtag && hashtagResults?.places && hashtagResults.places.length > 0 ? (
+              hashtag && hashtagResults && hashtagResults.length > 0 ? (
                 <div className="flex flex-col space-y-5">
-                  {hashtagResults?.places?.map((place) => (
-                    <PlaceItemByCategory place={place} key={place.id} session={session} />
+                  {hashtagResults?.map((place) => (
+                    <PlaceItem
+                      place={place}
+                      key={place.id}
+                      session={session}
+                    />
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600 font-semibold mx-auto my-2">
+                <p className="text-gray-600 font-semibold mx-auto mb-3">
                   No Recommendations were found in this search!
                 </p>
               )
@@ -101,11 +101,15 @@ export default function SearchResults({
             {results?.places && results?.places?.length > 0 ? (
               <div className="flex flex-col space-y-5">
                 {results?.places?.map((place) => (
-                  <PlaceItemByCategory place={place} key={place.id} session={session} />
+                  <PlaceItem
+                    place={place}
+                    key={place.id}
+                    session={session}
+                  />
                 ))}
               </div>
             ) : (
-              <p className="text-gray-600 font-semibold mx-auto my-2">
+              <p className="text-gray-600 font-semibold mx-auto mb-3">
                 No Recommendations were found in this search!
               </p>
             )}

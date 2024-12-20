@@ -26,6 +26,7 @@ import {
   HiOutlineCheck,
   HiOutlinePlus,
   HiOutlineSelector,
+  HiOutlineX,
 } from "react-icons/hi";
 import { Button } from "../ui/button";
 
@@ -39,6 +40,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
 import { addPlace } from "@/app/supabase-client";
+import { Session } from "@supabase/supabase-js";
 
 export const addPlaceSchema = z
   .object({
@@ -47,6 +49,7 @@ export const addPlaceSchema = z
       .min(2, { message: "The name is too short (minimum 2 characters)!" })
       .max(60, { message: "The name is too long (maximum 60 characters)!" }),
     category: z.string().optional(),
+    created_by: z.string().optional(),
     private: z.boolean().default(false),
     isOnline: z.boolean().default(false),
     city: z
@@ -83,8 +86,10 @@ export const addPlaceSchema = z
 
 export default function AddPlaceForm({
   categories,
+  session,
 }: {
   categories: CategoryData[];
+  session: Session | null;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -94,12 +99,14 @@ export default function AddPlaceForm({
   const [hashtags, setHashTags] = useState([] as string[]);
   const [tagsInputValue, setTagsInputValue] = useState('')
 
+  // Add schema
   const form = useForm<z.infer<typeof addPlaceSchema>>({
     resolver: zodResolver(addPlaceSchema),
     defaultValues: {
       name: "",
       comment: "",
       city: "",
+      created_by: session?.user?.id,
       category: "732ba6fa-6f52-4c07-bef7-d93bfae67afa",
       tags: [] as string[],
       private: false
@@ -330,7 +337,7 @@ export default function AddPlaceForm({
                             })
                           }}
                         >
-                          X
+                          <HiOutlineX className="w-4 h-4 pe-1" />
                         </span>
                       </Button>
                     )

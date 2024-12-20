@@ -1,29 +1,30 @@
 "use client"; // Mark this as a client component
 
 import React, { useState } from "react";
-import PlaceItem, { PlaceItemData } from "@/components/places/place-item";
+import { PlaceItemData } from "@/components/places/place-item";
 import { CategoryData } from "@/components/places/user-places";
 import { AdminData, UserData } from "@/components/header/items";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import debounce from "lodash.debounce";
-import { HiOutlineEmojiSad } from "react-icons/hi";
 import { Checkbox } from "@/components/ui/checkbox";
 import DatePicker from "react-datepicker";
+import AllPlaces from "./all-places";
 
-interface Props {
+export interface AllPlacesFilterProps {
     places: PlaceItemData[] | null; // Allow users to be null
     session?: Session | null;
     categories?: CategoryData[]
     userData?: (UserData & { admin: AdminData | null }) | null
 }
 
-export default function RecommendationFilter({
+export default function AllPlacesFilter({
     places,
     session = null,
     categories,
     userData
-}: Props) {
+}: AllPlacesFilterProps) {
     const [filters, setFilters] = useState({
+        name: "",
         city: "",
         category_id: "",
         private: false
@@ -39,16 +40,6 @@ export default function RecommendationFilter({
             [name]: value,
         }));
     }, 500);
-
-    const filteredPlaces = (place: PlaceItemData) => {
-        return (
-            (place?.id) &&
-            (!filters.city || place.city?.toLowerCase().startsWith(filters.city.toLowerCase())) &&
-            (!filters.category_id || place.category_id?.toLowerCase() === filters.category_id.toLowerCase()) &&
-            (!startDate || new Date(place.created_at).toDateString() === startDate.toDateString()) &&
-            (filters.private ? place.private : true)
-        )
-    }
 
     return (
         <div>
@@ -68,12 +59,20 @@ export default function RecommendationFilter({
                 >
                     <option value="">Sort</option>
                     <option value="NEWEST">Newest</option>
+                    <option value="POPULAR">Most popular</option>
                 </select>
             </div>
 
             {/* Filter Section (visible when showFilter is true) */}
             {showFilter && (
                 <div className="mb-6 flex items-center flex-wrap gap-3 max-w-[100%]">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Name"
+                        onChange={handleFilterChange}
+                        className="border p-2 rounded-md"
+                    />
                     <input
                         type="text"
                         name="city"
@@ -123,41 +122,16 @@ export default function RecommendationFilter({
 
             {/* User List Section */}
             <div className="grid grid-cols-1 gap-4 mt-4">
-                {places && places?.length > 0 ? (
-                    places
-                        .filter(place => filteredPlaces(place))
-                        .sort((a, b) => {
-                            if (sort === "NEWEST") {
-                                const dateA = new Date(a.created_at).getTime()
-                                const dateB = new Date(b.created_at).getTime()
-
-                                return dateB - dateA;
-                            }
-                            return 0
-                        })
-                        .map((place) => (
-                            <PlaceItem
-                                key={place.id}
-                                place={place}
-                                session={session}
-                                categories={categories}
-                                userData={userData}
-                            />
-                        ))
-                ) : (
-                    <div className="flex flex-col items-center justify-center space-y-4 w-1/3 mx-auto mt-20">
-                        <HiOutlineEmojiSad className="h-14 w-14 text-zinc-600" />
-                        <h2 className="text-2xl font-semibold text-zinc-800">
-                            No Recommendations found
-                        </h2>
-                        <p className="text-zinc-500 text-center">
-                            We couldn&apos;t find any Recommendations submitted by users yet.
-                            Please try again, and if you haven&apos;t created a Recommendation,
-                            create one!
-                        </p>
-                    </div>
-                )}
+                <AllPlaces
+                    places={places}
+                    filters={filters}
+                    sort={sort}
+                    startDate={startDate}
+                    session={session}
+                    categories={categories}
+                    userData={userData}
+                />
             </div>
-        </div>
+        </div >
     );
 }

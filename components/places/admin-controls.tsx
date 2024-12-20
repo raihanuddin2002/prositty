@@ -2,7 +2,6 @@
 
 import React, { Fragment, useState } from "react";
 import { Button } from "../ui/button";
-import { PlaceItemByCategoryProps } from "./place-item-category";
 import { Separator } from "../ui/separator";
 import {
     AlertDialog,
@@ -32,10 +31,11 @@ import {
     HiOutlineSave,
     HiOutlineSelector,
     HiOutlineTrash,
+    HiOutlineX,
 } from "react-icons/hi";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { addPlaceSchema } from "./add";
+import { addPlaceSchema } from "./add-place";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { editPlace } from "@/app/supabase-client";
@@ -65,7 +65,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Checkbox } from "../ui/checkbox";
 import { PlaceItemProps } from "./place-item";
 
-export default function PlaceControlsByItem({
+export default function PlaceAdminControls({
     userData,
     place,
     categories,
@@ -82,6 +82,7 @@ export default function PlaceControlsByItem({
     const [hashtags, setHashTags] = useState(place?.tags || [] as string[]);
     const [tagsInputValue, setTagsInputValue] = useState('')
 
+    // Edit schema
     const form = useForm<z.infer<typeof addPlaceSchema>>({
         resolver: zodResolver(addPlaceSchema),
         defaultValues: {
@@ -90,9 +91,11 @@ export default function PlaceControlsByItem({
             city: place?.city || "",
             isOnline: place?.online || false,
             link: place?.link || "",
+            created_by: place?.created_by || place?.profile?.id,
             contact: place?.contact || "",
-            category: place?.category_id || "",
-            tags: hashtags
+            category: place?.category?.id || "",
+            tags: hashtags,
+            private: place?.private || false
         },
     });
 
@@ -144,8 +147,9 @@ export default function PlaceControlsByItem({
         }
     }
 
-    if (!userData || (!userData.admin?.valid && userData.id != place?.created_by))
+    if (!userData || (!userData.admin?.valid && userData.id !== (place?.profile?.id || place?.created_by))) {
         return null;
+    }
 
     return (
         <Fragment>
@@ -208,6 +212,27 @@ export default function PlaceControlsByItem({
                                                     anything that you want to reccomend!
                                                 </FormDescription>
                                                 <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="private"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 my-4">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <div className="space-y-1 leading-none">
+                                                    <FormLabel>Private</FormLabel>
+                                                    <FormDescription>
+                                                        Select this if you want only your friends can see.
+                                                    </FormDescription>
+                                                </div>
                                             </FormItem>
                                         )}
                                     />
@@ -378,7 +403,7 @@ export default function PlaceControlsByItem({
                                         )}
                                     />
 
-                                    {/*  */}
+                                    {/* Hash tags */}
                                     <FormItem className="mt-4">
                                         <FormLabel>Hash tags</FormLabel>
                                         <FormControl>
@@ -397,7 +422,7 @@ export default function PlaceControlsByItem({
                                                                         })
                                                                     }}
                                                                 >
-                                                                    X
+                                                                    <HiOutlineX className="w-4 h-4 pe-1" />
                                                                 </span>
                                                             </Button>
                                                         )

@@ -2,7 +2,6 @@
 
 import React, { Fragment, useState } from "react";
 import { Button } from "../ui/button";
-import { PlaceItemByCategoryProps } from "./place-item-category";
 
 import {
     DialogDescription,
@@ -10,20 +9,18 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types_db";
 import { useToast } from "../ui/use-toast";
 import {
     HiOutlineCheck,
     HiOutlineSave,
-    HiOutlineSelector
+    HiOutlineSelector,
+    HiOutlineX
 } from "react-icons/hi";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { addPlaceSchema } from "./add";
+import { addPlaceSchema } from "./add-place";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { editPlace } from "@/app/supabase-client";
 import { cn } from "@/lib/utils";
 
 import {
@@ -50,13 +47,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Checkbox } from "../ui/checkbox";
 import { addPlace } from "@/app/supabase-client";
 import { PlaceItemData } from "./place-item";
+import { UserData } from "../header/items";
 
 type Props = {
     place: PlaceItemData | null;
     categories?: CategoryData[];
+    userData?: UserData | null;
 }
 
-export default function ClonePlaceItemForm({ place, categories }: Props) {
+export default function ClonePlace({ place, categories, userData }: Props) {
     const { toast } = useToast();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -64,6 +63,7 @@ export default function ClonePlaceItemForm({ place, categories }: Props) {
     const [hashtags, setHashTags] = useState(place?.tags || [] as string[]);
     const [tagsInputValue, setTagsInputValue] = useState('')
 
+    // Clone schema
     const form = useForm<z.infer<typeof addPlaceSchema>>({
         resolver: zodResolver(addPlaceSchema),
         defaultValues: {
@@ -72,10 +72,11 @@ export default function ClonePlaceItemForm({ place, categories }: Props) {
             city: place?.city || "",
             isOnline: place?.online || false,
             link: place?.link || "",
+            created_by: userData?.id,
             contact: place?.contact || "",
-            category: place?.category_id || "",
+            category: place?.category?.id || "",
             tags: hashtags,
-            private: false
+            private: place?.private || false
         },
     });
 
@@ -137,6 +138,27 @@ export default function ClonePlaceItemForm({ place, categories }: Props) {
                                             anything that you want to reccomend!
                                         </FormDescription>
                                         <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="private"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 my-4">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel>Private</FormLabel>
+                                            <FormDescription>
+                                                Select this if you want only your friends can see.
+                                            </FormDescription>
+                                        </div>
                                     </FormItem>
                                 )}
                             />
@@ -227,26 +249,7 @@ export default function ClonePlaceItemForm({ place, categories }: Props) {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="private"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-4">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <div className="space-y-1 leading-none">
-                                            <FormLabel>Private</FormLabel>
-                                            <FormDescription>
-                                                Select this if you want only your friends can see.
-                                            </FormDescription>
-                                        </div>
-                                    </FormItem>
-                                )}
-                            />
+
                             <FormField
                                 control={form.control}
                                 name="isOnline"
@@ -346,7 +349,7 @@ export default function ClonePlaceItemForm({ place, categories }: Props) {
                                                                 })
                                                             }}
                                                         >
-                                                            X
+                                                            <HiOutlineX className="w-4 h-4 pe-1" />
                                                         </span>
                                                     </Button>
                                                 )

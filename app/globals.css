@@ -81,7 +81,6 @@
  }
 
  /* Date picker */
-
 .react-datepicker__current-month.react-datepicker__current-month--hasYearDropdown.react-datepicker__current-month--hasMonthDropdown {
   display: none;
 }

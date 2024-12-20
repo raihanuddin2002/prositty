@@ -12,15 +12,16 @@ import { getInitials } from "@/lib/utils";
 import { useToast } from "../ui/use-toast";
 import { Card } from "../ui/card";
 import { HiOutlineEmojiSad } from "react-icons/hi";
-import PlaceItemByCategory, { PlaceItemByCategoryData } from "./place-item-category";
+import PlaceItemByCategory, { PlaceItemData } from "./place-item";
 import Link from "next/link";
+import PlaceItem from "./place-item";
 
 export type CategoryData = Database["public"]["Tables"]["categories"]["Row"];
 
 export interface UserPlacesListProps {
   session: Session | null;
   userData: (UserData & { admin: AdminData | null }) | null;
-  places: (CategoryData & { places: PlaceItemByCategoryData[] | null })[] | null;
+  places: (CategoryData & { places: PlaceItemData[] | null })[] | null;
 }
 
 export default function UserPlacesList({
@@ -98,16 +99,17 @@ export default function UserPlacesList({
                     {category.name}
                   </Link>
                 </h2>
-                {category.places?.map((place) => {
-                  return (
-                    <PlaceItemByCategory
-                      place={place}
-                      key={place.id}
-                      creator={userData}
-                      session={session}
-                    />
-                  );
-                })}
+                {category.places && category.places.length > 0 &&
+                  category.places?.map((place) => {
+                    return (
+                      <PlaceItem
+                        place={place}
+                        key={place.id}
+                        userData={userData}
+                        session={session}
+                      />
+                    );
+                  })}
               </Card>
             );
           })}

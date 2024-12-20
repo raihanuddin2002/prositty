@@ -5,10 +5,10 @@ import { AdminData, ItemsProps, UserData } from "../header/items";
 import { UserPlacesListProps } from "../places/user-places";
 import Link from "next/link";
 import { HiOutlineEmojiSad } from "react-icons/hi";
-import PlaceItemByCategory from "../places/place-item-category";
 import { Card } from "../ui/card";
 import { Session } from "@supabase/supabase-js";
 import dayjs from "dayjs";
+import PlaceItem from "../places/place-item";
 
 export function UserProfileInfo({
   userData,
@@ -71,19 +71,20 @@ export function UserProfilePlaces({
                     {category.name}
                   </Link>
                 </h2>
-                {category.places
-                  ?.slice()
-                  .reverse() // This will reverse the array, showing new items first
-                  .map((place) => {
-                  return (
-                    <PlaceItemByCategory
-                      place={place}
-                      key={place.id}
-                      creator={creator}
-                      session={session}
-                    />
-                  );
-                })}
+                {category.places && category.places.length > 0 &&
+                  category.places
+                    ?.slice()
+                    .reverse() // This will reverse the array, showing new items first
+                    .map((place) => {
+                      return (
+                        <PlaceItem
+                          place={place}
+                          key={place.id}
+                          userData={creator}
+                          session={session}
+                        />
+                      );
+                    })}
               </Card>
             );
           })}

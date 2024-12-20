@@ -54,7 +54,7 @@ export default async function CategoryPage({
           </div>
         )}
       </div>
-      <CategoryPlaces category={categoryData} session={session} />
+      <CategoryPlaces category={categoryData} session={session} userData={userData} />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { CategoryPlacesProps } from "@/components/category/category-places";
 import { CategoryData } from "@/components/category/list";
 import { AdminData, ItemsProps, UserData } from "@/components/header/items";
 import { UserPlacesListProps } from "@/components/places/user-places";
@@ -160,7 +159,20 @@ export async function getUserPlaces() {
       `
       *,
       places:places!inner (
-        id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)
+        id, 
+        name, 
+        created_at,
+        comment, 
+        contact, 
+        link, 
+        online, 
+        city, 
+        tags, 
+        likes, 
+        favorites,
+        private,
+        category:categories(id, name),
+        profile:profiles(id, username, full_name, avatar_url)
       )
       `
     )
@@ -179,8 +191,19 @@ export async function getUserPlacesByUsername(username: string) {
     .select(
       `
         *,
-        places:places!inner (
-          id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)
+          places:places!inner (
+            id, 
+            name, 
+            created_at,
+            comment, 
+            contact, 
+            link, 
+            online, 
+            city, 
+            tags, 
+            likes, 
+            favorites,
+            category:categories(id, name)
         )
       `
     )
@@ -195,7 +218,19 @@ export async function getAllPlacesByCategory() {
   const { data: places } = await supabase.from("categories").select(`
     *,
     places:places!inner (
-      id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)
+      id, 
+      name, 
+      created_at,
+      comment, 
+      contact, 
+      link, 
+      online, 
+      city, 
+      tags, 
+      likes, 
+      favorites,
+      category:categories(id, name), 
+      profile:profiles(id, username, full_name, avatar_url)
     )
   `)
     .order("created_at", { ascending: false })
@@ -231,16 +266,67 @@ export async function getCategoryBySlug(slug: string) {
     .from("categories")
     .select(
       `
-  *,
-  places:places!inner (
-    id, name, created_at,created_by, comment, contact, link, online, city, tags, category_id
-  )
-  `
+        *,
+        places:places!inner (
+          id,
+          name,
+          created_at,
+          comment,
+          contact,
+          link,
+          online,
+          city,
+          tags,
+          likes,
+          favorites,
+          category:categories(id, name),
+          profile:profiles(id, username, full_name, avatar_url)
+        )
+      `
     )
     .eq("slug", slug)
     .single();
 
-  return category as CategoryPlacesProps["category"];
+  return category as any["category"];
+}
+
+export async function getCategoryDetailsBySlug(slug: string) {
+  const supabase = createServerSupabaseClient();
+
+  const { error, data: category } = await supabase
+    .from("categories")
+    .select(`*`)
+    .eq("slug", slug)
+    .single();
+
+  return category as CategoryData;
+}
+export async function getUserProducts(category_id: string, user_id: string) {
+  const supabase = createServerSupabaseClient();
+
+  const { error, data: products } = await supabase
+    .from("places")
+    .select(`
+        id, 
+        name, 
+        created_at,
+        created_by, 
+        comment, contact, 
+        link, 
+        online, 
+        city,
+        tags, 
+        likes,
+        favorites,
+        category:categories(id, name),
+        profile:profiles(id, username,full_name, avatar_url)
+      `)
+    .eq("category_id", category_id)
+    .eq('created_by', user_id)
+
+  if (error) console.log(error)
+
+  return products as PlaceItemData[] | null;
 }
 
 export async function getMostActiveUsers() {
@@ -265,19 +351,48 @@ export async function getMostActiveUsers() {
 export async function getLatestPlaces(userCity: string) {
   const supabase = createServerSupabaseClient();
 
-  const placesFromUserCityPromise = supabase.rpc('latest_places_with_creator_profile' as any, { arg_limit: 10, user_city: userCity, condition: 'eq' })
+  const selectFileds = `
+      id, 
+      name, 
+      created_at,
+      comment, 
+      contact, 
+      link, 
+      online, 
+      city, 
+      tags, 
+      likes,
+      favorites,
+      private,
+      category:categories(id, name),
+      profile:profiles (id, username,full_name, avatar_url)
+    `
+  const placesFromUserCityPromise = supabase
+    .from("places")
+    .select(selectFileds)
+    .eq("city", userCity)
+    .order("created_at", { ascending: false })
+    .limit(10)
 
-  const placesFromOtherCitiesPromise = supabase.rpc('latest_places_with_creator_profile' as any, { arg_limit: 10, user_city: userCity, condition: 'neq' })
+  const placesFromOtherCitiesPromise = supabase
+    .from("places")
+    .select(selectFileds)
+    .neq("city", userCity)
+    .order("created_at", { ascending: false })
+    .limit(10)
 
-  const [{ data: placesFromUserCity, error: errorCity }, { data: placesFromOtherCities, error: errorOthers }] = await Promise.all([placesFromUserCityPromise, placesFromOtherCitiesPromise])
+  const [
+    { data: placesFromUserCity, error: errorUserCity },
+    { data: placesFromOtherCities, error: errorOtherCities }
+  ] = await Promise.all([placesFromUserCityPromise, placesFromOtherCitiesPromise])
 
-  if (errorCity) console.error(errorCity)
-  if (errorOthers) console.error(errorOthers)
+  if (errorUserCity) console.log("errorUserCity", errorUserCity)
+  if (errorOtherCities) console.log("errorOtherCities", errorOtherCities)
 
   let places = [] as PlaceItemData[]
 
-  if (placesFromUserCity) places = [...places, ...placesFromUserCity]
-  if (placesFromOtherCities) places = [...places, ...placesFromOtherCities]
+  if (placesFromUserCity) places = [...placesFromUserCity] as PlaceItemData[]
+  if (placesFromOtherCities) places = [...places, ...placesFromOtherCities] as PlaceItemData[]
 
   return places.length > 0 ? places : null
 }
@@ -285,13 +400,28 @@ export async function getLatestPlaces(userCity: string) {
 export async function getAllPlaces() {
   const supabase = createServerSupabaseClient();
 
-  const { data: places, error } = await supabase.rpc('all_places_with_creator_profile' as any)
+  const { data: placesData, error: placesError } = await supabase
+    .from("places")
+    .select(`
+      id, 
+      name, 
+      created_at,
+      comment, 
+      contact, 
+      link, 
+      online, 
+      city, 
+      tags, 
+      likes,
+      favorites,
+      private,
+      category:categories(id, name),
+      profile:profiles (id, username,full_name, avatar_url)
+    `)
 
-  if (error) {
-    console.error(error);
-  }
+  if (placesError) console.log(placesError)
 
-  return places?.length > 0 ? places as PlaceItemData[] : null
+  return placesData as PlaceItemData[] | null
 }
 
 export async function getAllUsers() {
@@ -323,7 +453,19 @@ export async function getAllFavorites() {
     .select(
       `
         place:places (
-          id, name, created_at,created_by, comment, contact, link, online, city, tags, categories(id, name)
+          id, 
+          name, 
+          created_at,
+          comment, 
+          contact, 
+          link, 
+          online, 
+          city, 
+          tags, 
+          likes, 
+          favorites,
+          category:categories(id, name), 
+          profile:profiles(id, username,full_name, avatar_url)
         )
       `
     )

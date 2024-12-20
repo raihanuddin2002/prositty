@@ -193,19 +193,31 @@ export type Database = {
       };
       places: {
         Row: {
-          category_id: string | null;
+          category_id?: string | null;
           city: string | null;
           comment: string;
           contact: string | null;
           created_at: string;
-          created_by: string;
+          created_by?: string;
           id: string;
           link: string | null;
           name: string;
           online: boolean | null;
           tags: string[];
-          category_name?: string;
           private: boolean;
+          recommendations?: number;
+          likes: number;
+          favorites: number;
+          category?: {
+            id: string;
+            name: string;
+          };
+          profile?: {
+            id: string;
+            username?: string;
+            full_name?: string;
+            avatar_url?: string;
+          };
         };
         Insert: {
           category_id?: string | null;
@@ -218,6 +230,7 @@ export type Database = {
           link?: string | null;
           name: string;
           online?: boolean | null;
+          private?: boolean;
         };
         Update: {
           category_id?: string | null;
@@ -230,6 +243,9 @@ export type Database = {
           link?: string | null;
           name?: string;
           online?: boolean | null;
+          likes?: number;
+          favorites?: number;
+          private?: boolean;
         };
         Relationships: [
           {
@@ -244,6 +260,13 @@ export type Database = {
             columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "places_created_by_fkey2";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];

@@ -1,15 +1,16 @@
-import PlaceItemByCategory from "@/components/places/place-item-category";
 import { Card } from "@/components/ui/card";
 import UserItem from "@/components/user/user-item";
 import React, { Fragment } from "react";
-import { getAllFavorites, getSession } from "../supabase-server";
+import { getAllFavorites, getSession, getUserDetails } from "../supabase-server";
 import { AdminData, UserData } from "@/components/header/items";
+import PlaceItem, { PlaceItemData } from "@/components/places/place-item";
 
 type UserProfile = (UserData & { admin: AdminData | null }) | null;
 
 export default async function Favorites() {
-  const [favorites, session] = await Promise.all([
+  const [favorites, userData, session] = await Promise.all([
     getAllFavorites(),
+    getUserDetails(),
     getSession(),
   ]);
 
@@ -23,13 +24,16 @@ export default async function Favorites() {
           </h3>
           {favorites.favoritePlaces && favorites.favoritePlaces.length > 0 ? (
             <div className="flex flex-col space-y-5">
-              {favorites.favoritePlaces.map((place: any) => (
-                <PlaceItemByCategory
-                  place={place.place}
-                  key={place.place?.id}
-                  session={session}
-                />
-              ))}
+              {favorites.favoritePlaces
+                .filter(place => place?.place)
+                .map((place) => (
+                  <PlaceItem
+                    key={place.place?.id}
+                    place={place.place as PlaceItemData}
+                    userData={userData}
+                    session={session}
+                  />
+                ))}
             </div>
           ) : (
             <p className="text-gray-600 font-semibold mx-auto my-2">

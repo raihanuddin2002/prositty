@@ -1,5 +1,5 @@
 import { getAllCategories, getSession } from "@/app/supabase-server";
-import AddPlaceForm from "@/components/places/add";
+import AddPlaceForm from "@/components/places/add-place";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -20,7 +20,7 @@ export default async function AddPlace() {
           </h3>
         </div>
       </div>
-      <AddPlaceForm categories={categories} />
+      <AddPlaceForm categories={categories} session={session} />
     </div>
   );
 }

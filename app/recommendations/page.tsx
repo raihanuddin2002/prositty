@@ -2,8 +2,8 @@ import React from "react";
 import { getAllCategories, getAllPlaces, getSession, getStats, getUserDetails } from "../supabase-server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { HiOutlineEmojiSad, HiOutlinePlus } from "react-icons/hi";
-import RecommendationFilter from "./recommendation-filter";
+import { HiOutlinePlus } from "react-icons/hi";
+import AllPlacesFilter from "@/components/places/all-places-filter";
 
 export default async function Places() {
   const [session, places, userData, categories] = await Promise.all([
@@ -40,7 +40,7 @@ export default async function Places() {
 
       <section className="mt-3">
         <div className="flex flex-col space-y-5">
-          <RecommendationFilter
+          <AllPlacesFilter
             places={places}
             session={session}
             categories={categories}
