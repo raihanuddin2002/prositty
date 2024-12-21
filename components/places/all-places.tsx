@@ -1,8 +1,10 @@
+"use client"
+
 import React, { memo } from 'react'
 import PlaceItem, { PlaceItemData } from '@/components/places/place-item'
 import { AllPlacesFilterProps } from '@/components/places/all-places-filter'
 import { HiOutlineEmojiSad } from 'react-icons/hi'
-import AutoSizer from "react-virtualized-auto-sizer";
+import { Virtuoso } from 'react-virtuoso'
 
 type Props = {
   filters: any,
@@ -22,46 +24,45 @@ const AllPlaces = ({ places, filters, sort, startDate, session, categories, user
     )
   }
 
+  const placesData = places && places.length > 0 ?
+    places
+      .filter(place => filteredPlaces(place))
+      .sort((a, b) => {
+        if (sort === "NEWEST") {
+          const dateA = new Date(a.created_at).getTime()
+          const dateB = new Date(b.created_at).getTime()
+
+          return dateB - dateA;
+        }
+        if (sort === "POPULAR") {
+          const favCountA = a.favorites;
+          const favCountB = b.favorites;
+          return favCountB - favCountA;
+        }
+        return 0
+      }) : []
+
   return (
     <>
       {
-        places && places.length > 0 ?
-          (
-            <AutoSizer disableHeight>
-              {({ width }) => (
-                places
-                  .filter(place => filteredPlaces(place))
-                  .sort((a, b) => {
-                    if (sort === "NEWEST") {
-                      const dateA = new Date(a.created_at).getTime()
-                      const dateB = new Date(b.created_at).getTime()
-
-                      return dateB - dateA;
-                    }
-
-                    if (sort === "POPULAR") {
-                      const favCountA = a.favorites;
-                      const favCountB = b.favorites;
-                      return favCountB - favCountA;
-                    }
-                    return 0
-                  })
-                  .map((place) => (
-                    <div
-                      key={place.id}
-                      style={{ height: `180px`, width: width + "px" }}
-                    >
-                      <PlaceItem
-                        place={place}
-                        session={session}
-                        categories={categories}
-                        userData={userData}
-                      />
-                    </div>
-                  ))
-              )}
-            </AutoSizer>
-          )
+        placesData && placesData.length > 0 ? (
+          <Virtuoso
+            useWindowScroll
+            data={placesData}
+            totalCount={placesData.length}
+            overscan={3}
+            itemContent={(_, place) => (
+              <div key={place.id} className='py-2'>
+                <PlaceItem
+                  place={place}
+                  session={session}
+                  categories={categories}
+                  userData={userData}
+                />
+              </div>
+            )}
+          />
+        )
           : (
             <div className="flex flex-col items-center justify-center space-y-4 w-1/3 mx-auto mt-20">
               <HiOutlineEmojiSad className="h-14 w-14 text-zinc-600" />

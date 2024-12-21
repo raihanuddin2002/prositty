@@ -149,9 +149,9 @@ importers:
       react-icons:
         specifier: ^4.12.0
         version: 4.12.0(react@18.2.0)
-      react-virtualized-auto-sizer:
-        specifier: ^1.0.25
-        version: 1.0.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-virtuoso:
+        specifier: ^4.12.3
+        version: 4.12.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       supabase:
         specifier: ^1.145.4
         version: 1.219.2
@@ -2241,11 +2241,12 @@ packages:
       '@types/react':
         optional: true
 
-  react-virtualized-auto-sizer@1.0.25:
-    resolution: {integrity: sha512-YHsksEGDfsHbHuaBVDYwJmcktblcHGafz4ZVuYPQYuSHMUGjpwmUCrAOcvMSGMwwk1eFWj1M/1GwYpNPuyhaBg==}
+  react-virtuoso@4.12.3:
+    resolution: {integrity: sha512-6X1p/sU7hecmjDZMAwN+r3go9EVjofKhwkUbVlL8lXhBZecPv9XVCkZ/kBPYOr0Mv0Vl5+Ziwgexg9Kh7+NNXQ==}
+    engines: {node: '>=10'}
     peerDependencies:
-      react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react: '>=16 || >=17 || >= 18'
+      react-dom: '>=16 || >=17 || >= 18'
 
   react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
@@ -4909,7 +4910,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.2.37
 
-  react-virtualized-auto-sizer@1.0.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  react-virtuoso@4.12.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
