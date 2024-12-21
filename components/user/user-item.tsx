@@ -29,6 +29,7 @@ interface UserData {
   country: string | null;
   belief: string | null;
   gender: "male" | "female" | "other" | null; // Ensure this matches your User interface
+  favorites: number;
 }
 
 interface AdminData {
@@ -43,6 +44,7 @@ interface UserItemProps {
 export default function UserItem({ userData, session = null }: UserItemProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [favorite, setFavorite] = useState<boolean>(false);
+  const [favorites, setFavorites] = useState<number>(userData?.favorites ?? 0);
   const supabase = createClientComponentClient<Database>();
 
   useEffect(() => {
@@ -114,7 +116,8 @@ export default function UserItem({ userData, session = null }: UserItemProps) {
                     size="icon"
                     onClick={() => {
                       setFavorite(false);
-                      removeFavoriteUser(userData?.id as string);
+                      setFavorites(favorites => favorites - 1)
+                      removeFavoriteUser(userData?.id as string, favorites);
                     }}
                   >
                     <HiStar className="w-5 h-5 mx-auto text-yellow-500" />
@@ -134,7 +137,8 @@ export default function UserItem({ userData, session = null }: UserItemProps) {
                     size="icon"
                     onClick={() => {
                       setFavorite(true);
-                      addFavoriteUser(userData?.id as string);
+                      setFavorites(favorites => favorites + 1)
+                      addFavoriteUser(userData?.id as string, favorites);
                     }}
                   >
                     <HiOutlineStar className="w-5 h-5 mx-auto text-gray-600" />
