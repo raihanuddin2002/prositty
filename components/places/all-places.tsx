@@ -49,7 +49,6 @@ const AllPlaces = ({ places, filters, sort, startDate, session, categories, user
                 session={session}
                 categories={categories}
                 userData={userData}
-                itemsBy={true}
               />
             )) : (
             <div className="flex flex-col items-center justify-center space-y-4 w-1/3 mx-auto mt-20">

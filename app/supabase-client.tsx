@@ -43,26 +43,69 @@ export async function addCategory(values: z.infer<typeof addCategorySchema>) {
   return result;
 }
 
-export async function addPlace(values: z.infer<typeof addPlaceSchema>) {
+export async function addPlace(values: z.infer<typeof addPlaceSchema>, place_id?: string) {
   const supabase = createClientComponentClient<Database>();
+  const { data: { session } } = await supabase.auth.getSession();
 
-  const result = await supabase
+  // note: common for insert data
+  const insertData = {
+    name: values.name,
+    category_id: values.category,
+    private: values.private || false,
+    online: values.isOnline || false,
+    created_by: session?.user.id,
+    city: values?.city || null,
+    comment: values.comment,
+    contact: values?.contact || null,
+    link: values?.link || null,
+    tags: values?.tags || null
+  }
+
+  // note: Inserting a new place
+  if (!place_id) {
+    const result = await supabase
+      .from("places")
+      .insert([insertData])
+      .select();
+
+    return result;
+  }
+
+  // note: Cloning the place
+  const addPlacePromise = await supabase
     .from("places")
-    .insert([
-      {
-        name: values.name,
-        category_id: values.category,
-        private: values.private || false,
-        online: values.isOnline || false,
-        created_by: values?.created_by,
-        city: values?.city || null,
-        comment: values.comment,
-        contact: values?.contact || null,
-        link: values?.link || null,
-        tags: values?.tags || null
-      },
-    ])
+    .insert([insertData])
     .select();
+
+  const recommendationsUpdatePromise = supabase
+    .from("places")
+    .update({
+      recommendations: typeof values?.recommendations === 'number' ? values?.recommendations + 1 : 0
+    })
+    .eq("id", place_id!)
+    .select();
+
+  const [result, { error: recommendationsUpdateError }] = await Promise.all([addPlacePromise, recommendationsUpdatePromise])
+
+  // if one of the errors, we need to reverse the update
+  if (result?.error || recommendationsUpdateError) {
+    console.log('addPlaceError', result?.error);
+    console.log('recommendationsUpdateError', recommendationsUpdateError);
+  } else if (result?.error) {
+    await supabase
+      .from("places")
+      .update({
+        recommendations: typeof values?.recommendations === 'number' ? values?.recommendations : 0
+      })
+      .eq("id", place_id!)
+      .select(); // reversing the update
+  } else if (recommendationsUpdateError) {
+    await supabase
+      .from("places")
+      .delete()
+      .eq("id", result?.data[0]?.id)
+      .select(); // reversing the update
+  }
 
   return result;
 }

@@ -52,10 +52,9 @@ import { UserData } from "../header/items";
 type Props = {
     place: PlaceItemData | null;
     categories?: CategoryData[];
-    userData?: UserData | null;
 }
 
-export default function ClonePlace({ place, categories, userData }: Props) {
+export default function ClonePlace({ place, categories }: Props) {
     const { toast } = useToast();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -72,9 +71,9 @@ export default function ClonePlace({ place, categories, userData }: Props) {
             city: place?.city || "",
             isOnline: place?.online || false,
             link: place?.link || "",
-            created_by: userData?.id,
             contact: place?.contact || "",
             category: place?.category?.id || "",
+            recommendations: place?.recommendations ?? 0,
             tags: hashtags,
             private: place?.private || false
         },
@@ -84,7 +83,7 @@ export default function ClonePlace({ place, categories, userData }: Props) {
 
     async function addItem(values: z.infer<typeof addPlaceSchema>) {
         setLoading(true);
-        const result = await addPlace({ ...values, tags: hashtags });
+        const result = await addPlace({ ...values, tags: hashtags }, place?.id!);
 
         if (!result.error) {
             toast({

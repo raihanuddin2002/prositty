@@ -106,7 +106,6 @@ export default async function Dashboard({
                     session={session}
                     userData={userData}
                     categories={allCategories}
-                    itemsBy={true}
                   />
                 )
               })}

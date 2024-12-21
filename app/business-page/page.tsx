@@ -1,12 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import React from 'react'
 import { HiOutlineEmojiSad } from 'react-icons/hi';
-import { getSession, getCategoryDetailsBySlug, getUserProducts } from '../supabase-server';
+import { getSession, getCategoryDetailsBySlug, getUserProducts, getCategories, getUserDetails } from '../supabase-server';
 import PlaceItem from '@/components/places/place-item';
 
 export default async function BusinessPage() {
-    const [session, categoryDetails] = await Promise.all([getSession(), getCategoryDetailsBySlug('products-')])
-    const products = await Promise.resolve(getUserProducts(categoryDetails.id, session?.user?.id || ''))
+    const [categoriesData, userData, session] = await Promise.all([getCategories(), getUserDetails(), getSession()])
+    const products = await Promise.resolve(getUserProducts(userData?.id || ''))
 
     if (!products)
         return (
@@ -24,46 +24,47 @@ export default async function BusinessPage() {
         );
 
     return (
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8 py-5">
-            <div className='flex gap-10'>
-                <Avatar className="h-40 w-40 mb-5">
-                    <AvatarImage
-                        alt={"Your user image"}
-                    // src={avatarUrl || undefined}
-                    />
-                    <AvatarFallback>
-                        {/* {initials} */}
-                    </AvatarFallback>
-                </Avatar>
+        <section className="w-full lg:max-w-6xl mx-auto flex flex-col md:grid md:grid-cols-3">
+            <div className="p-5 py-10 col-span-1">
+                <div className=''>
+                    <Avatar className="h-40 w-40 mb-5">
+                        <AvatarImage
+                            alt={"Your user image"}
+                        // src={avatarUrl || undefined}
+                        />
+                        <AvatarFallback>
+                            {/* {initials} */}
+                        </AvatarFallback>
+                    </Avatar>
 
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore pariatur accusamus porro eum? Illum earum, amet similique libero veritatis minus suscipit? Atque deserunt laborum blanditiis libero, debitis pariatur soluta repellendus? Placeat eum, consequatur reprehenderit doloribus sapiente omnis, ea recusandae nihil laboriosam asperiores quos debitis, rerum eius unde ab cumque. Autem ipsa nesciunt debitis sit.
-                </p>
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore pariatur accusamus porro eum? Illum earum, amet similique libero veritatis minus suscipit? Atque deserunt laborum blanditiis libero, debitis pariatur soluta repellendus? Placeat eum, consequatur reprehenderit doloribus sapiente omnis, ea recusandae nihil laboriosam asperiores quos debitis, rerum eius unde ab cumque. Autem ipsa nesciunt debitis sit.
+                    </p>
+                </div>
             </div>
 
-
-            <div className="max-w-screen-xl mx-auto">
+            <div className="p-5 col-span-2">
                 <div className="items-start justify-between py-4 border-b md:flex">
-                    <div className="max-w-xl">
-                        <h3 className="text-gray-800 text-2xl font-bold">
-                            {categoryDetails.name}
-                        </h3>
-                        <p className="text-gray-600 mt-2">
-                            <span className="text-black font-bold">
-                                {products?.length}
-                            </span>{" "}
-                            products in total.
-                        </p>
-                    </div>
-
+                    <p className="text-gray-600 mt-2">
+                        <span className="text-black font-bold">
+                            {products?.length}
+                        </span>{" "}
+                        products in total.
+                    </p>
                 </div>
 
-                <section className="mt-6 flex flex-col space-y-5">
+                <section className="mt-6 flex flex-col gap-4  mx-auto">
                     {products && products.length > 0 && products?.map((place) => {
-                        return <PlaceItem place={place} key={place.id} session={session} />;
+                        return <PlaceItem
+                            place={place}
+                            key={place.id}
+                            userData={userData}
+                            session={session}
+                            categories={categoriesData}
+                        />;
                     })}
                 </section>
             </div>
-        </div>
+        </section>
     )
 }

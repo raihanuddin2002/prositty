@@ -170,6 +170,7 @@ export async function getUserPlaces() {
         tags, 
         likes, 
         favorites,
+        recommendations,
         private,
         category:categories(id, name),
         profile:profiles(id, username, full_name, avatar_url)
@@ -203,6 +204,7 @@ export async function getUserPlacesByUsername(username: string) {
             tags, 
             likes, 
             favorites,
+            recommendations,
             category:categories(id, name)
         )
       `
@@ -229,6 +231,8 @@ export async function getAllPlacesByCategory() {
       tags, 
       likes, 
       favorites,
+      recommendations,
+      private,
       category:categories(id, name), 
       profile:profiles(id, username, full_name, avatar_url)
     )
@@ -279,6 +283,8 @@ export async function getCategoryBySlug(slug: string) {
           tags,
           likes,
           favorites,
+          recommendations,
+          private,
           category:categories(id, name),
           profile:profiles(id, username, full_name, avatar_url)
         )
@@ -301,7 +307,7 @@ export async function getCategoryDetailsBySlug(slug: string) {
 
   return category as CategoryData;
 }
-export async function getUserProducts(category_id: string, user_id: string) {
+export async function getUserProducts(user_id: string) {
   const supabase = createServerSupabaseClient();
 
   const { error, data: products } = await supabase
@@ -311,17 +317,19 @@ export async function getUserProducts(category_id: string, user_id: string) {
         name, 
         created_at,
         created_by, 
-        comment, contact, 
+        comment, 
+        contact, 
         link, 
         online, 
         city,
         tags, 
         likes,
         favorites,
+        recommendations,
+        private,
         category:categories(id, name),
         profile:profiles(id, username,full_name, avatar_url)
       `)
-    .eq("category_id", category_id)
     .eq('created_by', user_id)
 
   if (error) console.log(error)
@@ -364,6 +372,7 @@ export async function getLatestPlaces(userCity: string) {
       likes,
       favorites,
       private,
+      recommendations,
       category:categories(id, name),
       profile:profiles (id, username,full_name, avatar_url)
     `
@@ -415,6 +424,7 @@ export async function getAllPlaces() {
       likes,
       favorites,
       private,
+      recommendations,
       category:categories(id, name),
       profile:profiles (id, username,full_name, avatar_url)
     `)
@@ -464,6 +474,8 @@ export async function getAllFavorites() {
           tags, 
           likes, 
           favorites,
+          recommendations,
+          private,
           category:categories(id, name), 
           profile:profiles(id, username,full_name, avatar_url)
         )

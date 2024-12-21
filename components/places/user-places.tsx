@@ -89,16 +89,7 @@ export default function UserPlacesList({
         <div className="flex flex-col space-y-5">
           {places.map((category) => {
             return (
-              <Card className="p-4" key={category.id}>
-                <h2 className="text-lg">
-                  Category:{" "}
-                  <Link
-                    className="font-bold"
-                    href={`/category/${category.slug}`}
-                  >
-                    {category.name}
-                  </Link>
-                </h2>
+              <>
                 {category.places && category.places.length > 0 &&
                   category.places?.map((place) => {
                     return (
@@ -110,8 +101,8 @@ export default function UserPlacesList({
                       />
                     );
                   })}
-              </Card>
-            );
+              </>
+            )
           })}
         </div>
       ) : (

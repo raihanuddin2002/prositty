@@ -77,6 +77,7 @@ export const addPlaceSchema = z
         message: "The contact information is too long (maximum 90 characters)!",
       })
       .optional(),
+    recommendations: z.number().optional(),
   })
   .refine((data) => !(!data.isOnline && !data.city), {
     message:

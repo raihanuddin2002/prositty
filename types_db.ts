@@ -245,6 +245,7 @@ export type Database = {
           online?: boolean | null;
           likes?: number;
           favorites?: number;
+          recommendations?: number;
           private?: boolean;
         };
         Relationships: [
