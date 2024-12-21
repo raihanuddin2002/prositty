@@ -149,6 +149,9 @@ importers:
       react-icons:
         specifier: ^4.12.0
         version: 4.12.0(react@18.2.0)
+      react-virtualized-auto-sizer:
+        specifier: ^1.0.25
+        version: 1.0.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       supabase:
         specifier: ^1.145.4
         version: 1.219.2
@@ -2237,6 +2240,12 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  react-virtualized-auto-sizer@1.0.25:
+    resolution: {integrity: sha512-YHsksEGDfsHbHuaBVDYwJmcktblcHGafz4ZVuYPQYuSHMUGjpwmUCrAOcvMSGMwwk1eFWj1M/1GwYpNPuyhaBg==}
+    peerDependencies:
+      react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
@@ -4899,6 +4908,11 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.2.37
+
+  react-virtualized-auto-sizer@1.0.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
 
   react@18.2.0:
     dependencies:
