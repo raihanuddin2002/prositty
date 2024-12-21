@@ -31,8 +31,8 @@ export default function UserProfileView({
 }: UserInfoProps) {
   const supabase = createClientComponentClient<Database>();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [favorite, setFavorite] = useState<boolean>(false);
-  const [followers, setFollowers] = useState(0)
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [favorites, setFavorites] = useState(userData?.favorites ?? 0)
 
   const { toast } = useToast();
   const router = useRouter();
@@ -48,9 +48,9 @@ export default function UserProfileView({
 
       if (error) console.log(error);
 
-      if (data && data?.length > 0) return setFavorite(true);
+      if (data && data?.length > 0) return setIsFavorite(true);
 
-      return setFavorite(false);
+      return setIsFavorite(false);
     }
 
     async function downloadImage(path: string) {
@@ -74,20 +74,8 @@ export default function UserProfileView({
       }
     }
 
-    async function followersCountOfUser(id: string) {
-      const supabase = createClientComponentClient<Database>();
-
-      const { data, error } = await supabase
-        .rpc('followers_count_of_user' as any, { userid: id })
-
-      if (error) console.log(error);
-
-      return setFollowers(data ?? 0)
-    }
-
     if (userData?.avatar_url) downloadImage(userData?.avatar_url);
     if (userData) checkIfFavoriteUser(userData.id);
-    if (userData?.id) followersCountOfUser(userData.id)
   }, [userData?.avatar_url, supabase, toast, userData]);
 
   const initials = getInitials(userData?.full_name);
@@ -136,17 +124,17 @@ export default function UserProfileView({
           </div>
         </div>
         <div className="text-center">
-          <p><strong>{followers}</strong> followers</p>
+          <p><strong>{favorites}</strong> followers</p>
         </div>
         {session ? (
-          favorite ? (
+          isFavorite ? (
             <Button
               variant="outline"
               className="w-full mt-2"
               onClick={() => {
-                setFavorite(false);
-                setFollowers(follower => follower - 1)
-                removeFavoriteUser(userData?.id as string);
+                setIsFavorite(false);
+                setFavorites(favorites => favorites - 1)
+                removeFavoriteUser(userData?.id as string, favorites);
               }}
             >
               <HiStar className="w-5 h-5 mr-2 text-yellow-500" />
@@ -157,9 +145,9 @@ export default function UserProfileView({
               variant="outline"
               className="w-full mt-2"
               onClick={() => {
-                setFavorite(true)
-                setFollowers(follower => follower + 1)
-                addFavoriteUser(userData?.id as string);
+                setIsFavorite(true)
+                setFavorites(favorites => favorites + 1)
+                addFavoriteUser(userData?.id as string, favorites);
               }}
             >
               <HiOutlineStar className="w-5 h-5 mr-2 text-gray-600" />

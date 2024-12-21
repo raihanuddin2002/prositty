@@ -31,6 +31,7 @@ interface User {
   last_signal: string | null; // Add last_signal field
   location: { coordinates: number[], type: "Point" } | null; // Add location field
   admin: AdminData | null;
+  favorites: number;
 }
 
 interface AdminData {
@@ -96,6 +97,7 @@ export default function UserFilter({ users }: UserFilterProps) {
         >
           <option value="">Sort</option>
           <option value="NEWEST">Newest</option>
+          <option value="POPULAR">Most Popular</option>
         </select>
       </div>
 
@@ -176,6 +178,11 @@ export default function UserFilter({ users }: UserFilterProps) {
 
                 return dateB - dateA;
               }
+
+              if (sort === "POPULAR") {
+                return b.favorites - a.favorites;
+              }
+
               return 0
             })
             .map((user) => (

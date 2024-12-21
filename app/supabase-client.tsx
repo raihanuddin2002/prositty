@@ -170,36 +170,87 @@ export async function executeSearchByHashtag(hashtag: string) {
   return places as PlaceItemData[] | null
 }
 
-export async function addFavoriteUser(id: string) {
+export async function addFavoriteUser(id: string, currentFavorites: number) {
   const supabase = createClientComponentClient<Database>();
 
-  const { error } = await supabase
+  const favoriteUsersPromise = supabase
     .from("favorite-users")
     .insert([{ user_id: id }])
     .select();
 
-  if (error) console.log(error);
+  const updateProfilesPromise = supabase
+    .from("profiles")
+    .update({
+      favorites: currentFavorites + 1
+    })
+    .eq("id", id)
+    .select();
+
+  const [{ error: favoriteUsersError }, { error: updateProfilesError }] = await Promise.all([favoriteUsersPromise, updateProfilesPromise])
+
+  if (favoriteUsersError || updateProfilesError) {
+    console.log(favoriteUsersError || updateProfilesError);
+  } else if (favoriteUsersError) {
+    console.log(favoriteUsersError);
+    await supabase
+      .from("profiles")
+      .update({
+        favorites: currentFavorites
+      })
+      .eq("id", id); // reversing the update
+  } else if (updateProfilesError) {
+    console.log(updateProfilesError);
+    await supabase
+      .from("favorite-users")
+      .delete()
+      .eq("user_id", id); // reversing the update
+  }
 
   return {
-    error: error,
+    error: favoriteUsersError || updateProfilesError,
   };
 }
 
-export async function removeFavoriteUser(id: string) {
+export async function removeFavoriteUser(id: string, currentFavorites: number) {
   const supabase = createClientComponentClient<Database>();
 
-  const { error } = await supabase
+  const favoriteUsersPromise = supabase
     .from("favorite-users")
     .delete()
     .eq("user_id", id);
 
-  if (error) console.log(error);
+  const updateProfilesPromise = supabase
+    .from("profiles")
+    .update({
+      favorites: currentFavorites - 1
+    })
+    .eq("id", id);
+
+  const [{ error: favoriteUsersError }, { error: updateProfilesError }] = await Promise.all([favoriteUsersPromise, updateProfilesPromise])
+
+  if (favoriteUsersError || updateProfilesError) {
+    console.log(favoriteUsersError || updateProfilesError);
+  } else if (favoriteUsersError) {
+    console.log(favoriteUsersError);
+    await supabase
+      .from("profiles")
+      .update({
+        favorites: currentFavorites
+      })
+      .eq("id", id); // reversing the update
+  } else if (updateProfilesError) {
+    console.log(updateProfilesError);
+    await supabase
+      .from("favorite-users")
+      .insert([{ user_id: id }])
+      .select(); // reversing the update
+  }
 
   return {
-    error: error,
+    error: favoriteUsersError || updateProfilesError,
   };
 }
-
+// TODO: add favorite place
 export async function addFavoritePlace(id: string, currentFavorites: number) {
   const supabase = createClientComponentClient<Database>();
 

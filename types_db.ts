@@ -296,6 +296,7 @@ export type Database = {
           updated_at: string | null;
           username: string;
           website: string | null;
+          favorites: number;
         };
         Insert: {
           address?: string | null;
@@ -321,6 +322,7 @@ export type Database = {
           updated_at?: string | null;
           username: string;
           website?: string | null;
+          favorites?: number;
         };
         Update: {
           address?: string | null;
@@ -346,6 +348,7 @@ export type Database = {
           updated_at?: string | null;
           username?: string;
           website?: string | null;
+          favorites?: number;
         };
         Relationships: [
           {
