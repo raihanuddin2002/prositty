@@ -57,6 +57,7 @@ export interface PlaceItemProps {
     userData?: (UserData & { admin: AdminData | null }) | null // for full details login user admin or not etc which you can't found in session
     categoryBy?: boolean
     disableClone?: boolean
+    showRecommendations?: boolean
 }
 
 const PlaceItem = ({
@@ -65,7 +66,8 @@ const PlaceItem = ({
     categories,
     userData,
     categoryBy,
-    disableClone
+    disableClone,
+    showRecommendations = false
 }: PlaceItemProps) => {
     return (
         !categoryBy ? (
@@ -86,6 +88,7 @@ const PlaceItem = ({
                     categories={categories}
                     userData={userData}
                     disableClone={disableClone}
+                    showRecommendations={showRecommendations}
                 />
             </Card>
         ) : (
@@ -95,6 +98,7 @@ const PlaceItem = ({
                 categories={categories}
                 userData={userData}
                 disableClone={disableClone}
+                showRecommendations={showRecommendations}
             />
         )
     );
@@ -106,7 +110,7 @@ export default PlaceItem
 
 let categoryFetchCount = 0
 
-const PlaceItemContent = ({ place, session, categories, userData, disableClone }: PlaceItemProps) => {
+const PlaceItemContent = ({ place, session, categories, userData, disableClone, showRecommendations }: PlaceItemProps) => {
     const router = useRouter()
     const supabase = createClientComponentClient<Database>()
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -547,7 +551,7 @@ const PlaceItemContent = ({ place, session, categories, userData, disableClone }
                 </div>
             </Card>
 
-            {typeof place?.recommendations === 'number' ? <div className="text-xs text-gray-500 mt-2 px-2">
+            {showRecommendations && typeof place?.recommendations === 'number' ? <div className="text-xs text-gray-500 mt-2 px-2">
                 <span className="font-bold">{place?.recommendations}</span> times recommended
             </div> : null}
         </>

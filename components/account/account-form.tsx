@@ -203,6 +203,7 @@ export default function AccountForm({ session, userData }: ItemsProps) {
 
     if (avatarPath) downloadImage(avatarPath);
   }, [avatarPath, supabase, toast]);
+
   useEffect(() => {
     if (userData && position) {
       if (userData["location"] == null) userData['location'] = {

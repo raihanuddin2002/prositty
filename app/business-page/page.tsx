@@ -1,11 +1,12 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import React from 'react'
 import { HiOutlineEmojiSad } from 'react-icons/hi';
-import { getSession, getCategoryDetailsBySlug, getUserProducts, getCategories, getUserDetails } from '../supabase-server';
+import { getUserProducts, getCategories, getUserDetails, getBusinessPage, getSession } from '../supabase-server';
 import PlaceItem from '@/components/places/place-item';
+import BusinessPageDetails from '@/components/business-page/business-details';
 
 export default async function BusinessPage() {
     const [categoriesData, userData, session] = await Promise.all([getCategories(), getUserDetails(), getSession()])
+    const businessPageDetails = await getBusinessPage(userData?.id || '')
     const products = await Promise.resolve(getUserProducts(userData?.id || ''))
 
     if (!products)
@@ -26,21 +27,7 @@ export default async function BusinessPage() {
     return (
         <section className="w-full lg:max-w-6xl mx-auto flex flex-col md:grid md:grid-cols-3">
             <div className="p-5 py-10 col-span-1">
-                <div className=''>
-                    <Avatar className="h-40 w-40 mb-5">
-                        <AvatarImage
-                            alt={"Your user image"}
-                        // src={avatarUrl || undefined}
-                        />
-                        <AvatarFallback>
-                            {/* {initials} */}
-                        </AvatarFallback>
-                    </Avatar>
-
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore pariatur accusamus porro eum? Illum earum, amet similique libero veritatis minus suscipit? Atque deserunt laborum blanditiis libero, debitis pariatur soluta repellendus? Placeat eum, consequatur reprehenderit doloribus sapiente omnis, ea recusandae nihil laboriosam asperiores quos debitis, rerum eius unde ab cumque. Autem ipsa nesciunt debitis sit.
-                    </p>
-                </div>
+                <BusinessPageDetails userData={userData} businessPageDetails={businessPageDetails} />
             </div>
 
             <div className="p-5 col-span-2">
@@ -56,11 +43,12 @@ export default async function BusinessPage() {
                 <section className="mt-6 flex flex-col gap-4  mx-auto">
                     {products && products.length > 0 && products?.map((place) => {
                         return <PlaceItem
-                            place={place}
                             key={place.id}
+                            place={place}
                             userData={userData}
                             session={session}
                             categories={categoriesData}
+                            showRecommendations={true}
                         />;
                     })}
                 </section>

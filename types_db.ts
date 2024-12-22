@@ -361,6 +361,24 @@ export type Database = {
           }
         ];
       };
+      "business-page": {
+        Row: {
+          id: string;
+          avatar_url: string | null;
+          created_by: string;
+          description: string | null;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          created_by: string;
+          description?: string | null;
+        };
+        Update: {
+          avatar_url?: string | null;
+          created_by?: string;
+          description?: string | null;
+        };
+      };
     };
     Views: {
       [_ in never]: never;

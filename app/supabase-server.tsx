@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { PlaceItemData } from "@/components/places/place-item";
+import { BusinessPageDetails } from "@/components/business-page/business-details";
 
 export const createServerSupabaseClient = cache(() => {
   cookies().getAll()
@@ -505,4 +506,15 @@ export async function getAllFavorites() {
     favoriteUsers: userData || null,
     favoritePlaces: placesData || null,
   };
+}
+
+export async function getBusinessPage(user_id: string) {
+  const supabase = createServerSupabaseClient();
+
+  const { data, error } = await supabase.from("business-page")
+    .select()
+    .eq("created_by", user_id)
+    .single();
+
+  return data as BusinessPageDetails | null;
 }
