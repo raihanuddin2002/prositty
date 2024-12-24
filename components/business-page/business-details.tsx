@@ -28,7 +28,7 @@ export default function BusinessPageDetails({ userData, businessPageDetails }: P
     const supabase = createClientComponentClient<Database>()
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(businessPageDetails?.avatar_url || null);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [description, setDescription] = useState(businessPageDetails?.description || '');
     const [editMode, setEditMode] = useState(false)
     const [avatarPath, setAvatarPath] = useState<string | null | undefined>(businessPageDetails?.avatar_url);
@@ -205,7 +205,7 @@ export default function BusinessPageDetails({ userData, businessPageDetails }: P
 
     return (
         <>
-            <div className="relative mb-10">
+            <div className="mb-10">
                 <TooltipProvider>
                     <Tooltip delayDuration={400}>
                         <TooltipTrigger>

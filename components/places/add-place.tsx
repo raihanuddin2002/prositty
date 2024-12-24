@@ -167,6 +167,27 @@ export default function AddPlaceForm({
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="private"
+            render={({ field }) => (
+              <FormItem
+                className="flex flex-row items-start space-x-3 space-y-0 mt-4 mb-6"
+                title="Select this if you want only your friends can see."
+              >
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Private</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="category"
@@ -235,26 +256,6 @@ export default function AddPlaceForm({
                   <Textarea placeholder="I like it because..." {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="private"
-            render={({ field }) => (
-              <FormItem
-                className="flex flex-row items-start space-x-3 space-y-0 mt-4"
-                title="Select this if you want only your friends can see."
-              >
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Private</FormLabel>
-                </div>
               </FormItem>
             )}
           />

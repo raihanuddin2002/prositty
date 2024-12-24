@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import {
+  HiOutlineBriefcase,
   HiOutlineCheck,
   HiOutlineClipboardCopy,
   HiOutlineCollection,
@@ -144,6 +145,17 @@ export default function ProfileDropDown({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <a
+                href="/business-page"
+                onClick={() => setMenuState!(false)}
+              >
+                <HiOutlineBriefcase className="mr-2 h-5 w-5 text-gray-600" />
+                <span>Business Page</span>
+              </a>
+            </DropdownMenuItem>
+
             {userData?.admin?.valid && (
               <Fragment>
                 <DropdownMenuGroup>
