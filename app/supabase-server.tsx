@@ -516,5 +516,7 @@ export async function getBusinessPage(user_id: string) {
     .eq("created_by", user_id)
     .single();
 
+  if (error) console.log(error);
+
   return data as BusinessPageDetails | null;
 }

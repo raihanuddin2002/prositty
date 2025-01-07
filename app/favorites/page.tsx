@@ -22,18 +22,22 @@ export default async function Favorites() {
           <h3 className="font-semibold text-gray-900 text-lg">
             Favorite Recommendations
           </h3>
-          {favorites.favoritePlaces && favorites.favoritePlaces.length > 0 ? (
+          {favorites?.favoritePlaces && favorites?.favoritePlaces?.length > 0 ? (
             <div className="flex flex-col space-y-5">
               {favorites.favoritePlaces
                 .filter(place => place?.place)
-                .map((place) => (
-                  <PlaceItem
-                    key={place.place?.id}
-                    place={place.place as PlaceItemData}
-                    userData={userData}
-                    session={session}
-                  />
-                ))}
+                .map((place, index) => {
+                  if (!place?.place) return null
+
+                  return (
+                    <PlaceItem
+                      key={place?.place?.id || index}
+                      place={place?.place as PlaceItemData || null}
+                      userData={userData}
+                      session={session}
+                    />
+                  )
+                })}
             </div>
           ) : (
             <p className="text-gray-600 font-semibold mx-auto my-2">
